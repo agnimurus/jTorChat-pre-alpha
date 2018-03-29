@@ -66,12 +66,12 @@ Buddy b;
 	private void button2ActionPerformed(ActionEvent e) {
 		TCPort.profile_name = textField1.getText();
 		ConfigWriter.saveall(3);
-		TCPort.sendMyProfil();
+		TCPort.sendMyProfile();
 	}
 
 	private void button3ActionPerformed(ActionEvent e) {
 		TCPort.profile_text = textArea1.getText();
-		TCPort.sendMyProfil();
+		TCPort.sendMyProfile();
 		ConfigWriter.saveall(3);
 	}
 	

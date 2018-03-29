@@ -1,7 +1,7 @@
 package util;
 
 public class Status {
-    public static byte OFFLINE = 0,
+    public static final byte OFFLINE = 0,
             HANDSHAKE = 1,
             ONLINE = 2,
             AWAY = 3,

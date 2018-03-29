@@ -20,9 +20,10 @@ public class TCPort {
 	// Direct compile and run from source for fixing the path
 	public static String profile_name; 
 	public static String profile_text;
-	public static String status = "available"; // available away xa
+	private static TCPortStatus status = TCPortStatus.AVAILABLE;
 	public static String[] externalSourcePath;
 	private static boolean launched;
+
 	@SuppressWarnings("unused")
 	private static boolean halted;
 
@@ -279,7 +280,7 @@ public class TCPort {
 
 	public static void sendMyInfo() {
 		for (Buddy buddy : BuddyList.buds.values()) {
-			if (buddy.getStatus() >= Buddy.Status.ONLINE) {
+			if (buddy.getStatus() >= Status.ONLINE) {
 				try {
 					buddy.sendClient();
 					buddy.sendVersion();
@@ -291,14 +292,15 @@ public class TCPort {
 						ioe.printStackTrace();
 						buddy.disconnect(); // something is iffy if we error out
 					} catch (IOException e) {
-						// ignored
+						// TODO integrate a log
+            e.printStackTrace();
 					}
 				}
 			}
 		}
 	}
 
-	public static void sendMyProfil() /*  There's a typo in the method name (I think)!  */{
+	public static void sendMyProfile() /*  There's a typo in the method name (I think)!  */{
 		for (Buddy buddy : BuddyList.buds.values()) {
 			if (buddy.getStatus() >= Buddy.Status.ONLINE) {
 				try {
@@ -334,5 +336,20 @@ public class TCPort {
 			}
 		}
 	}
+
+	public static TCPortStatus getStatus() {
+	  return status;
+  }
+
+  public static void setStatus(TCPortStatus statusToSet) {
+	  status = statusToSet;
+  }
+
+  public static void setStatus(String statusToSet) throws IllegalArgumentException{
+	  //TCPortStatus.fromValue(statusToSet) may throw an IllegalArgumentException
+	  status = TCPortStatus.fromValue(statusToSet);
+  }
+
+
 
 }

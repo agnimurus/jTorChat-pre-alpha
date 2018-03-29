@@ -135,7 +135,7 @@ public class GuiSettings extends JFrame {
 		
 
 	    
-	    TCPort.sendMyProfil();
+	    TCPort.sendMyProfile();
 	    ConfigWriter.saveall(0);
 		dispose();
 		synchronized(this) {
