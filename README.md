@@ -1,2 +1,2 @@
 # jTorChat-pre-alpha
-Major refactoring of jTorChat
+To-do list: [Trello Board](https://trello.com/b/FL7I6kzQ/jtorchat)
