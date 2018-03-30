@@ -1,9 +1,10 @@
 package core;
 
 public enum TCPortStatus {
-  AVAILABLE("available"),
-  AWAY("away"),
-  XA("xa");
+  AVAILABLE("available"), // int value 1 if former codebase
+  AWAY("away"), // int value 2
+  XA("xa"), // int value 3
+  STATUS_SENT("status_sent"); // referred to as int value 0 FIXME This is a placeholder. Not sure if needed.
 
   private String status;
 

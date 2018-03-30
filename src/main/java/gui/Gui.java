@@ -1,5 +1,7 @@
 package gui;
 
+import core.Language;
+import core.TCPortStatus;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,7 +41,6 @@ import core.Config;
 import core.Logger;
 import core.TCPort;
 import core.TorLoader;
-import core.language;
 
 import util.ChatWindow;
 import util.MessageType;
@@ -117,9 +118,9 @@ public class Gui {
         Tray.init();
 
 		JMenuBar jmb = new JMenuBar();
-		JMenu jmStatus = new JMenu(language.langtext[1]);
-		JMenu jmHelp = new JMenu(language.langtext[2]);
-		final JMenuItem jmiHelpLink = new JMenuItem(language.langtext[11]);
+		JMenu jmStatus = new JMenu(Language.langtext[1]);
+		JMenu jmHelp = new JMenu(Language.langtext[2]);
+		final JMenuItem jmiHelpLink = new JMenuItem(Language.langtext[11]);
 		final JMenuItem jmiVersionName = new JMenuItem("Version");
 		jmiHelpLink.addActionListener(new ActionListener() { // note - the link is copiable so as to not open the link in the users normal browser automatically which could tip off anyone sniffing the network that they are using jtorcat
 
@@ -135,7 +136,7 @@ public class Gui {
 		jmHelp.add(jmiHelpLink);
 		
 		
-		JMenuItem jmiLog = new JMenuItem(language.langtext[12]);
+		JMenuItem jmiLog = new JMenuItem(Language.langtext[12]);
 		jmiLog.addActionListener(new ActionListener() {
 
 			@Override
@@ -159,47 +160,39 @@ public class Gui {
 		});
 	    jmHelp.add(jmiVersionName);
 		
-		final JMenuItem jmion = new JMenuItem(language.langtext[7]);
-		jmion.addActionListener(new ActionListener() {
+		final JMenuItem jmiOnline = new JMenuItem(Language.langtext[7]);
+		//See lang000007 property in a language .ini file --> Online property
+		jmiOnline.addActionListener(onlineActionListener -> {
+      Config.setUpdateStatus(TCPortStatus.AVAILABLE);
+      TCPort.sendMyStatus();
+    });
+		jmStatus.add(jmiOnline);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Config.updateStatus = 1;
-				TCPort.sendMyStatus();
-			}
-		});
-		jmStatus.add(jmion);
+		final JMenuItem jmiAway = new JMenuItem(Language.langtext[9]);
+		//See lang000009 --> Away
+		jmiAway.addActionListener(awayActionEvent -> {
+      Config.setUpdateStatus(TCPortStatus.AWAY);
+      TCPort.sendMyStatus();
+    });
+		jmStatus.add(jmiAway);
 
-		final JMenuItem jmiaway = new JMenuItem(language.langtext[9]);
-		jmiaway.addActionListener(new ActionListener() {
+		final JMenuItem jmiXa = new JMenuItem(Language.langtext[10]);
+		//See lang000010 --> Far away
+    //TODO INSIGHT INTO WHAT XA MEANS: far away? (high latency)
+		jmiXa.addActionListener(xaActionEvent -> {
+      Config.setUpdateStatus(TCPortStatus.XA);
+      TCPort.sendMyStatus();
+    });
+		jmStatus.add(jmiXa);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Config.updateStatus = 2;
-				TCPort.sendMyStatus();
-			}
-		});
-		jmStatus.add(jmiaway);
+		JMenu jmFile = new JMenu(Language.langtext[0]);
 
-		final JMenuItem jmixa = new JMenuItem(language.langtext[10]);
-		jmixa.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Config.updateStatus = 3;
-				TCPort.sendMyStatus();
-			}
-		});
-		jmStatus.add(jmixa);
-
-		JMenu jmFile = new JMenu(language.langtext[0]);
-
-		JMenuItem jmiAddContact = new JMenuItem(language.langtext[3]);
+		JMenuItem jmiAddContact = new JMenuItem(Language.langtext[3]);
 		JMenuItem jmiPingAttack = new JMenuItem("Flooding ping attack");
-		JMenuItem jmiSettings = new JMenuItem(language.langtext[4]);
-		JMenuItem jmiGUISettings = new JMenuItem(language.langtext[80]);
-		JMenuItem jmiProfileSettings = new JMenuItem(language.langtext[81]);
-		JMenuItem jmiExit = new JMenuItem(language.langtext[5]);
+		JMenuItem jmiSettings = new JMenuItem(Language.langtext[4]);
+		JMenuItem jmiGUISettings = new JMenuItem(Language.langtext[80]);
+		JMenuItem jmiProfileSettings = new JMenuItem(Language.langtext[81]);
+		JMenuItem jmiExit = new JMenuItem(Language.langtext[5]);
        
 		
 		
@@ -284,10 +277,10 @@ public class Gui {
 		f.getContentPane().add(jsp, BorderLayout.CENTER);
 
 		root = new DefaultMutableTreeNode("[root]");
-		buddyNodeholy = new DefaultMutableTreeNode(language.langtext[40]);
-		buddyNodeon = new DefaultMutableTreeNode(language.langtext[7]);
-		buddyNode = new DefaultMutableTreeNode(language.langtext[8]);
-		buddyNodeblack = new DefaultMutableTreeNode(language.langtext[39]);
+		buddyNodeholy = new DefaultMutableTreeNode(Language.langtext[40]);
+		buddyNodeon = new DefaultMutableTreeNode(Language.langtext[7]);
+		buddyNode = new DefaultMutableTreeNode(Language.langtext[8]);
+		buddyNodeblack = new DefaultMutableTreeNode(Language.langtext[39]);
 		root.add(buddyNodeholy);
 		root.add(buddyNodeon);
 		root.add(buddyNode);
@@ -398,7 +391,7 @@ public class Gui {
 		final Object o = d.getUserObject();
 		if (o instanceof Buddy) {
 
-			popup.add(getNewMenuItem(language.langtext[73], new ActionListener() {
+			popup.add(getNewMenuItem(Language.langtext[73], new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -418,8 +411,8 @@ public class Gui {
 				}
 			}));
 
-			if (Buddy.getBlack(((Buddy) o).getAddress())) {
-				popup.add(getNewMenuItem(language.langtext[75], new ActionListener() {
+			if (Buddy.isInBlackList(((Buddy) o).getAddress())) {
+				popup.add(getNewMenuItem(Language.langtext[75], new ActionListener() {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -428,7 +421,7 @@ public class Gui {
 					}
 				}));
 			} else {
-				if (Buddy.getHoly(((Buddy) o).getAddress())) {
+				if (Buddy.isInHolyList(((Buddy) o).getAddress())) {
 
 					popup.add(getNewMenuItem("Not Holy contact", new ActionListener() {
 
@@ -447,7 +440,7 @@ public class Gui {
 						}
 					}));
 					
-					popup.add(getNewMenuItem(language.langtext[76], new ActionListener() {
+					popup.add(getNewMenuItem(Language.langtext[76], new ActionListener() {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -460,7 +453,7 @@ public class Gui {
 				}
 			}
 
-			popup.add(getNewMenuItem(language.langtext[77], new ActionListener() {
+			popup.add(getNewMenuItem(Language.langtext[77], new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -491,7 +484,7 @@ public class Gui {
 	}
 
 	private void openChatWindow(Buddy b) {
-		if (!Buddy.getBlack(((Buddy) b).getAddress())) {
+		if (!Buddy.isInBlackList(((Buddy) b).getAddress())) {
 			getChatWindow(b, true, true).toFront();
 		}
 	}
@@ -574,7 +567,7 @@ public class Gui {
 				node.removeFromParent();
 			nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
-			if (Buddy.getHoly(((Buddy) buddy).getAddress())) {
+			if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
 				if (buddy.getAddress().equals(Config.us)) {
 					((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
 				} else {
@@ -660,7 +653,7 @@ public class Gui {
 						node.removeFromParent();
 					nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 					
-					if (Buddy.getHoly(((Buddy) buddy).getAddress())) {
+					if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
 						if (buddy.getAddress().equals(Config.us)) {
 							((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
 						} else {
@@ -770,7 +763,7 @@ public class Gui {
 			if(right){ChatWindow.update_window(MessageType.RECEIVE_NORMAL, w,msg,null,"",!buddy.isFullyConnected());}
 			
 		if(Config.alert_on_message==1){
-			if (!w.isFocused() && !(Buddy.getBlack(((Buddy) buddy).getAddress()))) {
+			if (!w.isFocused() && !(Buddy.isInBlackList(((Buddy) buddy).getAddress()))) {
 				if (alert != null && !alert.isFinished()){alert.kill();}
 				alert = new GuiAlert("New Message: "+buddy.toString());
 				alert.start();

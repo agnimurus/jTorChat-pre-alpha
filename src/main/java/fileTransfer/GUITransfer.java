@@ -1,12 +1,11 @@
 package fileTransfer;
 
+import core.Language;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 import core.Buddy;
-import core.language;
-
 
 
 @SuppressWarnings("serial")
@@ -43,7 +42,7 @@ public class GUITransfer extends JFrame {
 
 	public void update(long fileSize, long recieved, String status) {
 		if (recieved == -1) {
-			button1.setText(language.langtext[62]);
+			button1.setText(Language.langtext[62]);
 			button2.setVisible(false);
 		}
 		if (sending)
@@ -59,11 +58,11 @@ public class GUITransfer extends JFrame {
 		progressBar1.setValue((int) ((double) recieved / (double) fileSize * 100d));
 		//Logger.oldOut.println(getClass().getCanonicalName() + ": gui() " + fileSize + ", " + recieved + ", " + status);
 		if (fileSize == recieved) {
-			button1.setText(language.langtext[62]);
+			button1.setText(Language.langtext[62]);
 			completed = true;
 			if (!sending && ((FileReceiver) ift).fileNameSave != null && ((FileReceiver) ift).fileNameSave.length() > 0) {
 				((FileReceiver) ift).close();
-				button1.setText(language.langtext[62]);
+				button1.setText(Language.langtext[62]);
 			}}
 		
 		if (fileSize == recieved & !sending) {
@@ -110,7 +109,7 @@ public class GUITransfer extends JFrame {
 	}
 
 	void startfirst() {
-	button2.setText(language.langtext[63]);
+	button2.setText(Language.langtext[63]);
 	ift.startstop();
 	this.startstop = 1;
 	}
@@ -118,12 +117,12 @@ public class GUITransfer extends JFrame {
 		ift.startstop();
         if(this.startstop == 0)
         {
-        button2.setText(language.langtext[63]);
+        button2.setText(Language.langtext[63]);
         this.startstop = 1;
         }
         else
         {
-       button2.setText(language.langtext[64]);
+       button2.setText(Language.langtext[64]);
        this.startstop = 0;
         }
 	}
@@ -134,11 +133,11 @@ public class GUITransfer extends JFrame {
 
 private void language(){
 	
-	button2.setText(language.langtext[64]);
-	button5.setText(language.langtext[68]);
-	button4.setText(language.langtext[67]);
-	button3.setText(language.langtext[66]);
-	button1.setText(language.langtext[65]);
+	button2.setText(Language.langtext[64]);
+	button5.setText(Language.langtext[68]);
+	button4.setText(Language.langtext[67]);
+	button3.setText(Language.langtext[66]);
+	button1.setText(Language.langtext[65]);
 }
 
 	private void initComponents() {

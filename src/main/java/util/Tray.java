@@ -1,5 +1,6 @@
 package util;
 
+import core.Language;
 import gui.Gui;
 
 import java.awt.AWTException;
@@ -25,10 +26,6 @@ import core.Config;
 import core.Logger;
 import core.TCPort;
 import core.TorLoader;
-import core.language;
-
-
-
 
 
 public class Tray {
@@ -59,7 +56,7 @@ public class Tray {
 		    defaultItem.addActionListener(togListener);
 		    popup.add(defaultItem);
 		    popup.addSeparator();
-		    MenuItem exitItem = new MenuItem(language.langtext[5]);
+		    MenuItem exitItem = new MenuItem(Language.langtext[5]);
 		    exitItem.addActionListener(exitListener);
 		    popup.add(exitItem);
 		    trayIcon = new TrayIcon(image, "JTorchat - " + Config.us, popup);

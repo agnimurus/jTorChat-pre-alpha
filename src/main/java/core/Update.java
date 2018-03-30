@@ -30,16 +30,16 @@ public class Update {
 			Logger.log(Logger.INFO, "loadUpdate","Compare: " + Config.BUILD +" with "+ outversion);
 
 			if(isOutdated(Config.BUILD, outversion)) {
-				return language.langtext[52];
+				return Language.langtext[52];
 			} else {
 				if(Config.allcheckupdate == 1) {
 					Config.allcheckupdate = 0;
-					return language.langtext[53];
+					return Language.langtext[53];
 				} else 
 					return"close";
 			}
 		} else
-			return language.langtext[54];
+			return Language.langtext[54];
 	}
 
 	private static boolean isOutdated(String buildVersion, String outVersion) {

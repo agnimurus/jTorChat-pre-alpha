@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
-import core.language;
+import core.Language;
 
 @SuppressWarnings("serial")
 public class GuiTorLoading extends JFrame {
@@ -28,7 +28,7 @@ public class GuiTorLoading extends JFrame {
 	}
 	
 	private void language() {
-				textArea1.setText(language.langtext[51]);
+				textArea1.setText(Language.langtext[51]);
 	}
 
 	private void initComponents() {

@@ -1,14 +1,12 @@
 package gui;
 
+import core.Language;
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
 import special.Ping_Attack;
-
-import core.language;
-
 
 
 @SuppressWarnings("serial")
@@ -29,7 +27,7 @@ public class GuiPingAttack extends JFrame {
 	private void ok(ActionEvent e) {
 			String addr = textField1.getText();
 			if (addr.length() != 16) {
-				JOptionPane.showMessageDialog(null, language.langtext[55], language.langtext[56], JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, Language.langtext[55], Language.langtext[56], JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			int count;

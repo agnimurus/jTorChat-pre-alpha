@@ -1,5 +1,6 @@
 package fileTransfer;
 
+import core.Language;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,11 +14,8 @@ import java.security.NoSuchAlgorithmException;
 import core.Buddy;
 import core.Config;
 import core.Logger;
-import core.language;
 
-
-
-// Pretty much direct translation from the python torchat source. 
+// Pretty much direct translation from the python torchat source.
 // Original comments mainly preserved with occasional original 
 // code commented next to the translated code
 
@@ -394,7 +392,7 @@ public void closethis() { // in pytorchat the equivelant is closeForced
 	
 	
 	
-	this.gui.update(this.fileSize, -1, language.langtext[69]);
+	this.gui.update(this.fileSize, -1, Language.langtext[69]);
 	this.sendStopMessage();
 	if (this.fileNameSave != null && this.fileNameSave.length() != 0) {
 		try {

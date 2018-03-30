@@ -1,5 +1,6 @@
 package gui;
 
+import core.Language;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -127,12 +128,12 @@ public class GuiIcon extends JFrame {
 	private void language()
 	{
 
-		label1.setText(core.language.langtext[82]);
-		label2.setText(core.language.langtext[83]);
-		label3.setText(core.language.langtext[84]);
-		label4.setText(core.language.langtext[85]);
+		label1.setText(Language.langtext[82]);
+		label2.setText(Language.langtext[83]);
+		label3.setText(Language.langtext[84]);
+		label4.setText(Language.langtext[85]);
 	tabbedPane1.removeAll();
-	tabbedPane1.addTab(core.language.langtext[86], panel1);
+	tabbedPane1.addTab(Language.langtext[86], panel1);
 
 
 

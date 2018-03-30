@@ -48,7 +48,9 @@ public class Config {
   private static int fulllog;
   private static int buddyStart;
   private static int updateStart;
-  private static int updateStatus = 0;
+
+  private static TCPortStatus updateStatus = TCPortStatus.AVAILABLE;
+
   private static int firststart;
   private static int pageactive;
   private static int transferonstart;
@@ -66,8 +68,8 @@ public class Config {
   private static String nowstart = "";
   private static String nowstartupdate = "";
   private static String LastCheck;
-  private static String lang;
-  private static String dlang = "en";
+  private static String lang;//language selection TODO change to enum
+  private static String dlang = "en";//TODO try to understand what dlang is.
   private static String answer;
   private static String os;
   // Paths to all Imortant Files
@@ -107,7 +109,7 @@ public class Config {
     }
 
     // Choose the right binary for every system
-    if (os.indexOf("win") >= 0) {
+    if (os.contains("win")) {
       if (obfsproxy == 0) {
         Torbinary = TorWin;
         Tortorrc = TorWINLINtorrc;
@@ -115,7 +117,7 @@ public class Config {
         Torbinary = TorWinobf;
         Tortorrc = TorWINLINtorrcobf;
       }
-    } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {
+    } else if (os.contains("nix") || os.contains("nux")) {
       if (obfsproxy == 0) {
         Torbinary = TorLin;
         Tortorrc = TorWINLINtorrc;
@@ -125,7 +127,7 @@ public class Config {
       }
     }
 
-    answer = language.loadlang();
+    answer = Language.loadlang();
     Logger.log(Logger.INFO, "Config", "Using " + SOCKS_PORT + " as socks port.");
     Logger.log(Logger.INFO, "Config", "Using " + LOCAL_PORT + " as local port.");
   }
@@ -308,11 +310,11 @@ public class Config {
     Config.updateStart = updateStart;
   }
 
-  public static int getUpdateStatus() {
+  public static TCPortStatus getUpdateStatus() {
     return updateStatus;
   }
 
-  public static void setUpdateStatus(int updateStatus) {
+  public static void setUpdateStatus(TCPortStatus updateStatus) {
     Config.updateStatus = updateStatus;
   }
 

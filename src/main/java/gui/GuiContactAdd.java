@@ -1,5 +1,6 @@
 package gui;
 
+import core.Language;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -9,8 +10,6 @@ import javax.swing.*;
 import core.Buddy;
 import core.BuddyList;
 import core.Config;
-import core.language;
-
 
 
 @SuppressWarnings("serial")
@@ -31,7 +30,7 @@ public class GuiContactAdd extends JFrame {
 	private void ok(ActionEvent e) {
 			String addr = textField1.getText();
 			if (addr.length() != 16) {
-				JOptionPane.showMessageDialog(null, language.langtext[55], language.langtext[56], JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, Language.langtext[55], Language.langtext[56], JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			if (addr.equals(Config.us)) {
@@ -52,9 +51,9 @@ public class GuiContactAdd extends JFrame {
 
 	private void language()
 	{
-		label1.setText(language.langtext[13]);
-		label2.setText(language.langtext[14]);
-		button1.setText(language.langtext[15]);
+		label1.setText(Language.langtext[13]);
+		label2.setText(Language.langtext[14]);
+		button1.setText(Language.langtext[15]);
 	}
 	
 	

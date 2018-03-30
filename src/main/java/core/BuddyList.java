@@ -65,7 +65,7 @@ public class BuddyList {
   }
 
   public static void loadBuddies() throws FileNotFoundException {
-    Scanner scanner = new Scanner(new FileInputStream(Config.CONFIG_DIR + "bl.txt"));
+    Scanner scanner = new Scanner(new FileInputStream(Config.getConfigDir() + "bl.txt"));
     Random random = new Random();
     String line = "";
     Buddy buddy;
@@ -83,7 +83,7 @@ public class BuddyList {
           }
         }
 
-        if (!line.substring(0, 16).equals(Config.us)) {
+        if (!line.substring(0, 16).equals(Config.getUs())) {
           if (line.length() > 16) {
             buddy = new Buddy(line.substring(0, 16), line.substring(17), true);
             buddy.setReconnectAt(System.currentTimeMillis() + 15000 + random.nextInt(30000));
@@ -104,7 +104,7 @@ public class BuddyList {
   }
 
   public static void loadBlack() throws FileNotFoundException {
-    Scanner scanner = new Scanner(new FileInputStream(Config.CONFIG_DIR + "blacklist.txt"));
+    Scanner scanner = new Scanner(new FileInputStream(Config.getConfigDir() + "blacklist.txt"));
 
     while (scanner.hasNextLine()) {
       String line = scanner.nextLine();
@@ -142,7 +142,7 @@ public class BuddyList {
   }
 
   public static void loadHoly() throws FileNotFoundException {
-    Scanner scanner = new Scanner(new FileInputStream(Config.CONFIG_DIR + "holylist.txt"));
+    Scanner scanner = new Scanner(new FileInputStream(Config.getConfigDir() + "holylist.txt"));
 
     while (scanner.hasNextLine()) {
       String line = scanner.nextLine();

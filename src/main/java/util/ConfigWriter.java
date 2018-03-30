@@ -44,9 +44,13 @@ public class ConfigWriter {
 		return i;
 	}
 
-	public static String assign(String string, String s, Properties prop) {
-		String x = (String) prop.get(string);
-		String ret = s;
+	public static String assign(String key, String defaultReturnValue, Properties prop) {
+
+		//FIXME I believe each occurence of this method can be replaced with a prop.getProperty(key,default) call
+		String x = (String) prop.get(key);
+
+		//TODO use ternary operator instead (for concision)
+		String ret = defaultReturnValue;
 		if (x != null) {
 			ret = x;
 		}

@@ -1,5 +1,6 @@
 package fileTransfer;
 
+import core.Language;
 import gui.GuiChatWindow;
 import gui.Gui;
 
@@ -16,7 +17,6 @@ import java.util.Random;
 import core.Buddy;
 import core.Logger;
 import core.ThreadManager;
-import core.language;
 
 
 import util.Util;
@@ -88,7 +88,7 @@ public class FileSender implements Runnable, IFileTransfer {
 			if (buddy.isFullyConnected()) {
 
 				//Logger.oldOut.println("(2) file transfer waiting for connection");
-				this.gui.update(this.fileSize, 0, language.langtext[70]);
+				this.gui.update(this.fileSize, 0, Language.langtext[70]);
 			}
 
 			// this.running will be set to false when the user hits "cancel"
@@ -99,7 +99,7 @@ public class FileSender implements Runnable, IFileTransfer {
 			// user could have aborted while waiting in the loop above
 			if (running) {
 				//Logger.oldOut.println("(2) sending 'filename' message");
-				 this.gui.update(this.fileSize, 0, language.langtext[71]);
+				 this.gui.update(this.fileSize, 0, Language.langtext[71]);
 				synchronized (buddy.TSO_LOCK) {
 					OutputStream os = buddy.theirSock.getOutputStream();
 					String msg = "filename " + id + " " + fileSize + " " + blockSize + " " + fileName;
@@ -303,7 +303,7 @@ public class FileSender implements Runnable, IFileTransfer {
 
 		if (end == this.fileSize) {
 			// the outer sender loop can now stop waiting for timeout
-			this.gui.update(this.fileSize, end, language.langtext[72]);
+			this.gui.update(this.fileSize, end, Language.langtext[72]);
 			this.completed = true;
 			
 		}

@@ -37,40 +37,37 @@ public class TCPort {
 
 
 
-				if(Config.visiblelog == 1) {
+				if(Config.getVisiblelog() == 1) {
 					GuiLog.getGuiLog().setVisible(true);
 				}
 
 
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-
-				@Override
-				public void run() {
-					Logger.setOverride(true);
-					Logger.stopGLog();
-					Logger.log(Logger.INFO, "Shutdown", "Starting...");
-					// for (Buddy b : BuddyList.buds.values()) {
-					// try {
-					// b.disconnect();
-					// } catch (IOException e) {
-					// System.err.println("Error disconnecting " + b.getAddress() + ": " + e.getLocalizedMessage());
-					// }
-					// }
-					TorLoader.cleanUp();
-					try {
-						if (launched)
-							BuddyList.saveBuddies();
-						BuddyList.disconnect_all();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				Logger.setOverride(true);
+				Logger.stopGLog();
+				Logger.log(Logger.INFO, "Shutdown", "Starting...");
+				// for (Buddy b : BuddyList.buds.values()) {
+				// try {
+				// b.disconnect();
+				// } catch (IOException e) {
+				// System.err.println("Error disconnecting " + b.getAddress() + ": " + e.getLocalizedMessage());
+				// }
+				// }
+				TorLoader.cleanUp();
+				try {
+					if (launched)
+						BuddyList.saveBuddies();
+					BuddyList.disconnect_all();
+				} catch (IOException e) {
+					//TODO Log exception
+					e.printStackTrace();
 				}
-			});
+			}));
 
 
 
 
-			if (Config.loadTor == 1)
+			if (Config.getLoadTor() == 1)
 				TorLoader.loadTor();
 
 
@@ -247,9 +244,9 @@ public class TCPort {
 		System.err.println("*** Error during startup, Halting! ***");
 		e.printStackTrace();
 		TCServ.halt();
-		if (GuiLog.instance != null) {
-			GuiLog.instance.setVisible(true);
-			GuiLog.instance.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		if (GuiLog.getGuiLog() != null) {
+			GuiLog.getGuiLog().setVisible(true);
+			GuiLog.getGuiLog().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			if (launched) {
 				try {
 					BuddyList.saveBuddies();
@@ -321,7 +318,7 @@ public class TCPort {
 
 	public static void sendMyStatus() {
 		for (Buddy buddy : BuddyList.buds.values()) {
-			if (buddy.getStatus() >= Buddy.Status.ONLINE) {
+			if (buddy.getStatus() >= Status.ONLINE) {
 				try {
 					buddy.sendStatus();
 				} catch (IOException ioe) {
@@ -329,8 +326,7 @@ public class TCPort {
 						ioe.printStackTrace();
 						buddy.disconnect(); // something is iffy if we error out
 					} catch (IOException e) {
-						// ignored
-						//plzzz this is badd practice - DW
+						// TODO Log exception
 					}
 				}
 			}

@@ -29,7 +29,7 @@ public class TorLoader {
 			public void run() {
 
 				if (Config.answer!=null)  {
-					// if a language file NOT found
+					// if a Language file NOT found
 					Logger.log(Logger.FATAL, CLASS_NAME, Config.answer);
 					GuiLog.instance.setVisible(true);
 					torLoading.getProgressBar1().setValue(0);
@@ -77,7 +77,7 @@ public class TorLoader {
 													int starting3 = Integer.parseInt(starting[5]);
 													if (starting3 <= 100 || starting3 > 0) {
 														torLoading.getProgressBar1().setValue(Integer.parseInt(starting[5]));
-														torLoading.gettextArea1().setText(language.langtext[51]);
+														torLoading.gettextArea1().setText(Language.langtext[51]);
 														torLoading.getProgressBar1().setIndeterminate(false);
 														if(starting3 == 100) {
 															synchronized(loadLock) {
@@ -110,7 +110,7 @@ public class TorLoader {
 											} else {
 												torLoading.getProgressBar1().setValue(0);
 												torLoading.getProgressBar1().setIndeterminate(false);
-												torLoading.gettextArea1().setText(language.langtext[48]);
+												torLoading.gettextArea1().setText(Language.langtext[48]);
 											}
 										}
 
@@ -127,7 +127,7 @@ public class TorLoader {
 											GuiLog.instance.setVisible(true);
 											torLoading.getProgressBar1().setValue(0);
 											torLoading.getProgressBar1().setIndeterminate(false);
-											torLoading.gettextArea1().setText(language.langtext[49]);
+											torLoading.gettextArea1().setText(Language.langtext[49]);
 										}
 									}
 									sc.close();
@@ -137,7 +137,7 @@ public class TorLoader {
 										GuiLog.instance.setVisible(true);
 										torLoading.getProgressBar1().setValue(0);
 										torLoading.getProgressBar1().setIndeterminate(false);
-										torLoading.gettextArea1().setText(language.langtext[50]);
+										torLoading.gettextArea1().setText(Language.langtext[50]);
 									}
 								}
 							}

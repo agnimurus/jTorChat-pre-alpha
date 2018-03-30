@@ -1,5 +1,6 @@
 package gui;
 
+import core.Language;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -8,7 +9,6 @@ import javax.swing.event.*;
 
 import core.Config;
 import core.TCPort;
-import core.language;
 
 import util.ConfigWriter;
 
@@ -159,42 +159,42 @@ public class GuiSettings extends JFrame {
 	private void language()
 	{
 
-		checkBox11.setText(language.langtext[78]);
-		checkBox12.setText(language.langtext[79]);
-		checkBox2.setText(language.langtext[20]);
-		checkBox4.setText(language.langtext[21]);
-		checkBox5.setText(language.langtext[22]);
-		checkBox7.setText(language.langtext[23]);
-		checkBox8.setText(language.langtext[24]);
-		checkBox10.setText(language.langtext[41]);
-		label4.setText(language.langtext[25]);
-		label5.setText(language.langtext[26]);
-		label6.setText(language.langtext[27]);
-		checkBox1.setText(language.langtext[28]);
-		checkBox9.setText(language.langtext[38]);
-		label3.setText(language.langtext[29]);
-		label7.setText(language.langtext[30]);
-		label8.setText(language.langtext[31]);
-		button2.setText(language.langtext[33]);
-		checkBox3.setText(language.langtext[32]);
-		label9.setText(language.langtext[34]);
-		button3.setText(language.langtext[35]);
-		checkBox6.setText(language.langtext[36]);;
+		checkBox11.setText(Language.langtext[78]);
+		checkBox12.setText(Language.langtext[79]);
+		checkBox2.setText(Language.langtext[20]);
+		checkBox4.setText(Language.langtext[21]);
+		checkBox5.setText(Language.langtext[22]);
+		checkBox7.setText(Language.langtext[23]);
+		checkBox8.setText(Language.langtext[24]);
+		checkBox10.setText(Language.langtext[41]);
+		label4.setText(Language.langtext[25]);
+		label5.setText(Language.langtext[26]);
+		label6.setText(Language.langtext[27]);
+		checkBox1.setText(Language.langtext[28]);
+		checkBox9.setText(Language.langtext[38]);
+		label3.setText(Language.langtext[29]);
+		label7.setText(Language.langtext[30]);
+		label8.setText(Language.langtext[31]);
+		button2.setText(Language.langtext[33]);
+		checkBox3.setText(Language.langtext[32]);
+		label9.setText(Language.langtext[34]);
+		button3.setText(Language.langtext[35]);
+		checkBox6.setText(Language.langtext[36]);;
 
 
 	
 	tabbedPane1.removeAll();
-	tabbedPane1.addTab(language.langtext[16], panel1);
-	tabbedPane1.addTab(language.langtext[17], panel2);
-	tabbedPane1.addTab(language.langtext[18], panel3);
-	tabbedPane1.addTab(language.langtext[19], panel4);
-	tabbedPane1.addTab(language.langtext[45], panel5);
+	tabbedPane1.addTab(Language.langtext[16], panel1);
+	tabbedPane1.addTab(Language.langtext[17], panel2);
+	tabbedPane1.addTab(Language.langtext[18], panel3);
+	tabbedPane1.addTab(Language.langtext[19], panel4);
+	tabbedPane1.addTab(Language.langtext[45], panel5);
 
 
 	}
 
 	private void getlanginfo(String file) {
-		String[] info = language.get_info_from_file(file);
+		String[] info = Language.get_info_from_file(file);
 		textField3.setText(info[0]);
 		textField11.setText(info[1]);
 		textField12.setText(info[2]);
@@ -478,7 +478,7 @@ public class GuiSettings extends JFrame {
 				}
 
 				//---- label10 ----
-				label10.setText("Please choose a language.");
+				label10.setText("Please choose a Language.");
 
 				GroupLayout panel5Layout = new GroupLayout(panel5);
 				panel5.setLayout(panel5Layout);
