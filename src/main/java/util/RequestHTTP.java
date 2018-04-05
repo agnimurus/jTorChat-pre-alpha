@@ -61,8 +61,9 @@ ArrayList<String> file = new ArrayList<String>();
 		}
 
 		// Declare a new proxyed socket and connect to it (No DNS leak via createUnresolved)
-		Logger.log(Logger.INFO, CLASS_NAME,"Connect to proxy with port: "+ Config.SOCKS_PORT + " and host: 127.0.0.1");
-		Socket ourSock = new Socket(new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", Config.SOCKS_PORT)));
+		Logger.log(Logger.INFO, CLASS_NAME,"Connect to proxy with port: "+ Config.getSocksPort() + " and host: 127.0.0.1");
+		Socket ourSock = new Socket(new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1",
+				Config.getSocksPort())));
 		Logger.log(Logger.INFO, CLASS_NAME,"Starting secure remote proxy tunnel to "+host+" with port "+port);
 		try {
 			ourSock.connect(InetSocketAddress.createUnresolved(host, port));
@@ -78,7 +79,7 @@ ArrayList<String> file = new ArrayList<String>();
 		SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 		SSLSocket socket;
 		try {
-		socket = (SSLSocket) factory.createSocket(ourSock,"127.0.0.1",Config.SOCKS_PORT,true);
+		socket = (SSLSocket) factory.createSocket(ourSock,"127.0.0.1", Config.getSocksPort(),true);
 		is = socket.getInputStream();
 		os = socket.getOutputStream();
 		} catch (IOException e) {

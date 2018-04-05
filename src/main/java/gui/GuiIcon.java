@@ -26,11 +26,13 @@ public class GuiIcon extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		initComponents();
-		list1 = util.list.addelements(list1,Config.icon_folder.substring(0,Config.icon_folder.length()-5),Config.ICON_DIR_MAIN,".icon");
+		list1 = util.list.addelements(list1,
+				Config.getIcon_folder().substring(0, Config.getIcon_folder().length()-5),
+				Config.getIconDirMain(),".icon");
 		language();
-		textField1.setText(Integer.toString(Config.image_size));
-		textField2.setText(Integer.toString(Config.icon_size));
-		textField3.setText(Integer.toString(Config.icon_space));
+		textField1.setText(Integer.toString(Config.getImage_size()));
+		textField2.setText(Integer.toString(Config.getIcon_size()));
+		textField3.setText(Integer.toString(Config.getIcon_space()));
 		
 		
 		this.addWindowListener(new WindowListener() {
@@ -71,7 +73,7 @@ public class GuiIcon extends JFrame {
 				}
 				
 				
-				Config.image_size = tray_size;
+				Config.setImage_size(tray_size);
 
 				
 			} catch (NumberFormatException nfe) {
@@ -87,7 +89,7 @@ public class GuiIcon extends JFrame {
 					JOptionPane.showMessageDialog(null, textField2.getText() + " is an invalid number", "Invalid Number", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				Config.icon_size = buddy_size;
+				Config.setIcon_size(buddy_size);
 				
 				
 				
@@ -105,7 +107,7 @@ public class GuiIcon extends JFrame {
 					return;
 				}
 				
-				Config.icon_space = buddy_space;
+				Config.setIcon_space(buddy_space);
 				
 
 			} catch (NumberFormatException nfe) {
@@ -140,7 +142,7 @@ public class GuiIcon extends JFrame {
 	}
 
 	private void list1ValueChanged(ListSelectionEvent e) {
-	    Config.icon_folder = list1.getSelectedValue().toString() + ".icon";
+	    Config.setIcon_folder(list1.getSelectedValue().toString() + ".icon");
 	}
 
 

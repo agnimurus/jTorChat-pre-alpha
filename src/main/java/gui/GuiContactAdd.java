@@ -33,7 +33,7 @@ public class GuiContactAdd extends JFrame {
 				JOptionPane.showMessageDialog(null, Language.langtext[55], Language.langtext[56], JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			if (addr.equals(Config.us)) {
+			if (addr.equals(Config.getUs())) {
 				JOptionPane.showMessageDialog(null, "Error", "You can not add yourself", JOptionPane.ERROR_MESSAGE);
 				return;
 			}

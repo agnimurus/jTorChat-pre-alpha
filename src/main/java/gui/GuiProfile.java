@@ -53,7 +53,7 @@ Buddy b;
 		textArea1.setEditable(true);
 		textField1.setText(TCPort.profile_name);
 		textField4.setVisible(false);
-		textField2.setText(Config.us);
+		textField2.setText(Config.getUs());
 		textField3.setText(Config.CLIENT + " " + Config.VERSION);
 		textArea1.setText(TCPort.profile_text);
 		}

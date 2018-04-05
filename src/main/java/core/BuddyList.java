@@ -166,7 +166,7 @@ public class BuddyList {
   }
 
   public static void saveBuddies() throws IOException {
-    FileOutputStream fos = new FileOutputStream(Config.CONFIG_DIR + "bl.txt");
+    FileOutputStream fos = new FileOutputStream(Config.getConfigDir() + "bl.txt");
     for (Buddy buddy : buds.values()) {
       ConfigWriter.savebuddy(buddy);
 
@@ -183,7 +183,7 @@ public class BuddyList {
   }
 
   public static void saveBlack() throws IOException {
-    FileOutputStream fos = new FileOutputStream(Config.CONFIG_DIR + "blacklist.txt");
+    FileOutputStream fos = new FileOutputStream(Config.getConfigDir() + "blacklist.txt");
     for (Buddy buddy : black.values()) {
       fos.write((buddy.getAddress() + "\n").getBytes());
     }
@@ -191,7 +191,7 @@ public class BuddyList {
   }
 
   public static void saveHoly() throws IOException {
-    FileOutputStream fos = new FileOutputStream(Config.CONFIG_DIR + "holylist.txt");
+    FileOutputStream fos = new FileOutputStream(Config.getConfigDir() + "holylist.txt");
     for (Buddy buddy : holy.values()) {
       fos.write((buddy.getAddress() + "\n").getBytes());
     }
@@ -223,7 +223,7 @@ public class BuddyList {
           // Ignore any buddies already in your contact list
           if (!buds.containsKey(line.substring(0, 16))) {
 
-            if (!line.substring(0, 16).equals(Config.us)) {
+            if (!line.substring(0, 16).equals(Config.getUs())) {
               if (line.length() > 16) {
                 Buddy b = new Buddy(line.substring(0, 16),
                     line.substring(17), true); // .connect();

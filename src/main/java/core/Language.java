@@ -24,8 +24,8 @@ public class Language {
 
 		prop = load_lang_prop(Config.getLang());
 		if(prop==null) {
-			Config.lang=Config.dlang;
-			prop = load_lang_prop(Config.LANG_DIR + Config.lang + ".ini");
+			Config.setLang(Config.getDlang());
+			prop = load_lang_prop(Config.getLangDir() + Config.getLang() + ".ini");
 		}
 
 		//If prop is STILL null
@@ -46,7 +46,7 @@ public class Language {
 
 		if(until<until_max) {
 
-			prop = load_lang_prop(Config.dlang);
+			prop = load_lang_prop(Config.getDlang());
 			int until2 = Integer.parseInt(ConfigWriter.assign("until", "0", prop));
 
 			if(until2<until_max){return "The second Language file is not new only " + until2;}
@@ -62,7 +62,7 @@ public class Language {
 		Properties prop = new Properties();
 
 		try {
-			prop.load(new InputStreamReader(new FileInputStream(Config.LANG_DIR + file + ".ini"), "UTF-16"));
+			prop.load(new InputStreamReader(new FileInputStream(Config.getLangDir() + file + ".ini"), "UTF-16"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,7 +118,7 @@ public class Language {
 
 		Properties prop = new Properties();
 		try {
-			prop.load(new InputStreamReader(new FileInputStream(Config.LANG_DIR + file + ".ini"), "UTF-16"));
+			prop.load(new InputStreamReader(new FileInputStream(Config.getLangDir() + file + ".ini"), "UTF-16"));
 		} catch (FileNotFoundException e) {
 			info[0] = "Sorry but this Language not exist!";
 			info[1] = "empty";

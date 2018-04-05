@@ -32,8 +32,8 @@ public class Update {
 			if(isOutdated(Config.BUILD, outversion)) {
 				return Language.langtext[52];
 			} else {
-				if(Config.allcheckupdate == 1) {
-					Config.allcheckupdate = 0;
+				if(Config.getAllcheckupdate() == 1) {
+					Config.setAllcheckupdate(0);
 					return Language.langtext[53];
 				} else 
 					return"close";

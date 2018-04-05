@@ -661,7 +661,7 @@ public class Buddy {
     this.cookie = cookie;
   }
 
-  public boolean isReceivedPong() {
+  public boolean getReceivedPong() {
     return receivedPong;
   }
 

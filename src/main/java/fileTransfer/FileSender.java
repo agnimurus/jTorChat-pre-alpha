@@ -100,8 +100,8 @@ public class FileSender implements Runnable, IFileTransfer {
 			if (running) {
 				//Logger.oldOut.println("(2) sending 'filename' message");
 				 this.gui.update(this.fileSize, 0, Language.langtext[71]);
-				synchronized (buddy.TSO_LOCK) {
-					OutputStream os = buddy.theirSock.getOutputStream();
+				synchronized (buddy.getTsoLock()) {
+					OutputStream os = buddy.getTheirSock().getOutputStream();
 					String msg = "filename " + id + " " + fileSize + " " + blockSize + " " + fileName;
 					Logger.log(Logger.NOTICE, this.getClass(), "Sending " + msg + " to " + buddy + ".");
 					os.write((msg + "\n").getBytes());
@@ -209,8 +209,8 @@ public class FileSender implements Runnable, IFileTransfer {
 					}
 
 					// the message is sent over conn_in
-					synchronized (buddy.TSO_LOCK) {
-						OutputStream os = buddy.theirSock.getOutputStream();
+					synchronized (buddy.getTsoLock()) {
+						OutputStream os = buddy.getTheirSock().getOutputStream();
 						String msg = "filedata " + id + " " + start + " " + hash + " "; // + new String(data.array());
 						Logger.log(Logger.NOTICE, this.getClass(), "Sending " + msg + " to " + buddy + ".");
 						os.write(msg.getBytes());

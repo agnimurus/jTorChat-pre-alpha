@@ -28,19 +28,19 @@ public class TorLoader {
 			@Override
 			public void run() {
 
-				if (Config.answer!=null)  {
+				if (Config.getAnswer() !=null)  {
 					// if a Language file NOT found
-					Logger.log(Logger.FATAL, CLASS_NAME, Config.answer);
-					GuiLog.instance.setVisible(true);
+					Logger.log(Logger.FATAL, CLASS_NAME, Config.getAnswer());
+					GuiLog.getGuiLog().setVisible(true);
 					torLoading.getProgressBar1().setValue(0);
 					torLoading.getProgressBar1().setIndeterminate(false);
-					torLoading.gettextArea1().setText(Config.answer);
+					torLoading.gettextArea1().setText(Config.getAnswer());
 				} else {
 
-					if (Config.offlineMod == 0) {
+					if (Config.getOfflineMod() == 0) {
 						Boolean ssfail = false;
 						try {
-							ServerSocket ss = new ServerSocket(Config.LOCAL_PORT);
+							ServerSocket ss = new ServerSocket(Config.getLocalPort());
 							ss.close();
 						} catch (IOException e) {
 							ssfail = true;
@@ -53,12 +53,12 @@ public class TorLoader {
 							torLoading.getProgressBar1().setIndeterminate(false);
 						} else {
 
-							if (Config.loadTor == 1)  {
+							if (Config.getLoadTor() == 1)  {
 								// only load portable tor if not testing
 								ProcessBuilder procBuilder = instantiateProcessBuilder();
 
-								procBuilder.directory(new File(Config.TOR_DIR).getAbsoluteFile());
-								System.out.println(new File(Config.TOR_DIR).getAbsolutePath());
+								procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
+								System.out.println(new File(Config.getTorDir()).getAbsolutePath());
 								procBuilder.redirectErrorStream(true);
 
 								try {
@@ -81,8 +81,12 @@ public class TorLoader {
 														torLoading.getProgressBar1().setIndeterminate(false);
 														if(starting3 == 100) {
 															synchronized(loadLock) {
-																Config.us = new Scanner(new FileInputStream(Config.TOR_DIR + "hidden_service/hostname")).nextLine().replace(".onion", "");
-																Logger.log(Logger.NOTICE, CLASS_NAME, "Set 'us' to " + Config.us);
+																Config.setUs(new Scanner(
+																		new FileInputStream(Config.getTorDir() + "hidden_service/hostname"))
+																		.nextLine()
+																		.replace(".onion", ""));
+																Logger.log(Logger.NOTICE, CLASS_NAME, "Set 'us' to " + Config
+																		.getUs());
 																loadLock.notifyAll();
 																torLoading.dispose();
 															}
@@ -101,8 +105,8 @@ public class TorLoader {
 												GuiKillTor.listenerport();
 												process.destroy();
 												procBuilder = instantiateProcessBuilder();
-												procBuilder.directory(new File(Config.TOR_DIR).getAbsoluteFile());
-												System.out.println(new File(Config.TOR_DIR).getAbsolutePath());
+												procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
+												System.out.println(new File(Config.getTorDir()).getAbsolutePath());
 												procBuilder.redirectErrorStream(true);
 												process = procBuilder.start();
 												sc = new Scanner(process.getInputStream());
@@ -124,7 +128,7 @@ public class TorLoader {
 
 										if (line.contains("broken state. Dying.")) {
 											Logger.log(Logger.FATAL, CLASS_NAME, "Tor has died apparently, Ja.");
-											GuiLog.instance.setVisible(true);
+											GuiLog.getGuiLog().setVisible(true);
 											torLoading.getProgressBar1().setValue(0);
 											torLoading.getProgressBar1().setIndeterminate(false);
 											torLoading.gettextArea1().setText(Language.langtext[49]);
@@ -134,7 +138,7 @@ public class TorLoader {
 								} catch (IOException e) {
 									Logger.log(Logger.SEVERE, CLASS_NAME, e.getLocalizedMessage());
 									if (e.getLocalizedMessage().contains("Cannot")) {
-										GuiLog.instance.setVisible(true);
+										GuiLog.getGuiLog().setVisible(true);
 										torLoading.getProgressBar1().setValue(0);
 										torLoading.getProgressBar1().setIndeterminate(false);
 										torLoading.gettextArea1().setText(Language.langtext[50]);
@@ -150,7 +154,7 @@ public class TorLoader {
 			}
 		}, "Starting Tor.", "Tor Monitor Thread");
 
-		if (Config.offlineMod == 0 & Config.loadTor == 1) {
+		if (Config.getOfflineMod() == 0 & Config.getLoadTor() == 1) {
 			try {
 				synchronized(loadLock) {
 					loadLock.wait();
@@ -168,7 +172,7 @@ public class TorLoader {
 			loadLock.notifyAll();
 		}
 
-		Config.firststart = 0;
+		Config.setFirststart(0);
 		ConfigWriter.saveall(2);
 
 
@@ -180,7 +184,7 @@ public class TorLoader {
 
 
 		// fix: On Windows obfsproxy do not close when his linked tor close --> make better in future
-		if (Config.os.contains("win") && Config.obfsproxy==1) {
+		if (Config.getOs().contains("win") && Config.getObfsproxy() ==1) {
 			String command1="taskkill /F /IM jobfsproxy.exe";
 			Runtime run = Runtime.getRuntime();
 			try {
@@ -204,24 +208,26 @@ public class TorLoader {
 		ProcessBuilder pb;
 		Logger.log(Logger.NOTICE, "TorLoader ", "Checking OS");
 		// PROCESSBUILDER settings for WINDOWS
-		if (Config.os.contains("win")) {
+		if (Config.getOs().contains("win")) {
 
 			// if so, then start tor.exe with torrc.txt
 			Logger.log(Logger.NOTICE, CLASS_NAME, "Start portable tor in windows");
-			pb = new ProcessBuilder(Config.TOR_DIR + Config.Torbinary, "-f", Config.TOR_DIR + Config.Tortorrc);
+			pb = new ProcessBuilder(Config.getTorDir() + Config.getTorbinary(), "-f", Config.getTorDir() + Config
+					.getTortorrc());
 
-		} else if (Config.os.contains("nix") || Config.os.contains("nux")) {
+		} else if (Config.getOs().contains("nix") || Config.getOs().contains("nux")) {
 
 			// PROCESSBUILDER settings for LINUX and UNIX
 			Logger.log(Logger.NOTICE, CLASS_NAME, "Start portable tor in *nix or linux");
 
-			pb = new ProcessBuilder(Config.TOR_DIR +Config.Torbinary,"-f",Config.TOR_DIR + Config.Tortorrc);
-			pb.environment().put("LD_LIBRARY_PATH", Config.TOR_DIR+Config.TorLinlib);
-			pb.environment().put("LDPATH", Config.TOR_DIR+"linux/lib/");
+			pb = new ProcessBuilder(Config.getTorDir() + Config.getTorbinary(),"-f", Config.getTorDir() + Config
+					.getTortorrc());
+			pb.environment().put("LD_LIBRARY_PATH", Config.getTorDir() + Config.getTorLinlib());
+			pb.environment().put("LDPATH", Config.getTorDir() +"linux/lib/");
 
 		} else {
 			Logger.log(Logger.NOTICE, CLASS_NAME,"Can't detect OS type, using system tor (need system tor to work)");
-			pb = new ProcessBuilder("tor", "-f", Config.TOR_DIR + Config.Tortorrc );
+			pb = new ProcessBuilder("tor", "-f", Config.getTorDir() + Config.getTortorrc());
 		}
 		
 		return pb;

@@ -16,10 +16,10 @@ public class util_page {
         try {
             if (page.indexOf('.') == -1 || page.indexOf('/') == -1) {
                 Scanner scannerObj;
-                File f1 = new File(Config.PAGE_DIR + page + ".txt");
+                File f1 = new File(Config.getPageDir() + page + ".txt");
 
                 if (f1.isFile() && f1.canRead()) {
-                    scannerObj = new Scanner(new FileInputStream(Config.PAGE_DIR + page + ".txt"));
+                    scannerObj = new Scanner(new FileInputStream(Config.getPageDir() + page + ".txt"));
 
                     while (scannerObj.hasNextLine()) {
                         msg += "\n" + scannerObj.nextLine();

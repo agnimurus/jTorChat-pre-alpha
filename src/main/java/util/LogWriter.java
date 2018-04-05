@@ -19,7 +19,7 @@ public class LogWriter {
 		  String filename = "error";
 	if (typ == 0) {	 filename = System.currentTimeMillis() / 1000 + "." + Util.myRandom(100, 1000) +  "-" + "main.log"; };
 	if (typ == 1) {	 filename = System.currentTimeMillis() / 1000 + "-" + free + ".log"; };
-	file = new File(Config.LOG_DIR + filename);
+	file = new File(Config.getLogDir() + filename);
 	     try {
 
 	       writer = new FileWriter(file ,true);

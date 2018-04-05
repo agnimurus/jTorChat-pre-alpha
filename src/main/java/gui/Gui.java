@@ -44,6 +44,7 @@ import core.TorLoader;
 
 import util.ChatWindow;
 import util.MessageType;
+import util.Status;
 import util.TCIconRenderer;
 import util.Tray;
 
@@ -76,7 +77,7 @@ public class Gui {
 		instance = this;
 		setLAF("Nimbus");
 
-		if ((TCPort.profile_name == null && TCPort.profile_text == null) || Config.firststart == 1) {
+		if ((TCPort.profile_name == null && TCPort.profile_text == null) || Config.getFirststart() == 1) {
 			Logger.log(Logger.WARNING, this.getClass(), "Start setting window");
 	
 			GuiSettings guis = new GuiSettings();
@@ -89,7 +90,7 @@ public class Gui {
 			} catch (InterruptedException e) {
 				// ignored
 			}
-		} else if (Config.SOCKS_PORT < 1 || Config.LOCAL_PORT < 1 || Config.us == null) {
+		} else if (Config.getSocksPort() < 1 || Config.getLocalPort() < 1 || Config.getUs() == null) {
 			Logger.log(Logger.WARNING, this.getClass(), "Start setting window on advanced");
 			GuiSettings guis = new GuiSettings();
 			guis.getTabbedPane1().setSelectedIndex(1);
@@ -111,7 +112,7 @@ public class Gui {
 		extraSpace = 4;
 		listener = new Listener();
 		APIManager.addEventListener(listener);
-		f = new JFrame(Config.us + " - Buddy List");
+		f = new JFrame(Config.getUs() + " - Buddy List");
 		f.setLayout(new BorderLayout());
 		
 		// Change HIDE_ON_CLOSE or EXIT_ON_CLOSE when it works
@@ -122,41 +123,28 @@ public class Gui {
 		JMenu jmHelp = new JMenu(Language.langtext[2]);
 		final JMenuItem jmiHelpLink = new JMenuItem(Language.langtext[11]);
 		final JMenuItem jmiVersionName = new JMenuItem("Version");
-		jmiHelpLink.addActionListener(new ActionListener() { // note - the link is copiable so as to not open the link in the users normal browser automatically which could tip off anyone sniffing the network that they are using jtorcat
+		// note - the link is copiable so as to not open the link in the users normal browser automatically which could tip off anyone sniffing the network that they are using jtorcat
+		jmiHelpLink.addActionListener(e -> {
+			JTextField jtf = new JTextField();
+			jtf.setEditable(false);
+			jtf.setText("https://github.com/jtorchat/jtorchat/wiki");
+			JOptionPane.showMessageDialog(null, jtf, "Wiki link", JOptionPane.PLAIN_MESSAGE);
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JTextField jtf = new JTextField();
-						jtf.setEditable(false);
-						jtf.setText("https://github.com/jtorchat/jtorchat/wiki");
-						JOptionPane.showMessageDialog(null, jtf, "Wiki link", JOptionPane.PLAIN_MESSAGE);
-
-					}
-				});
+		});
 		jmHelp.add(jmiHelpLink);
 		
 		
 		JMenuItem jmiLog = new JMenuItem(Language.langtext[12]);
-		jmiLog.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GuiLog.instance.setVisible(!GuiLog.instance.isVisible());
-			}
-		});
+		jmiLog.addActionListener(e -> GuiLog.getGuiLog().setVisible(!GuiLog.getGuiLog().isVisible()));
 		jmHelp.add(jmiLog);
 
-		
-		
-		jmiVersionName.addActionListener(new ActionListener() { // note - the link is copiable so as to not open the link in the users normal browser automatically which could tip off anyone sniffing the network that they are using jtorcat
+		// note - the link is copiable so as to not open the link in the users normal browser automatically which could tip off anyone sniffing the network that they are using jtorcat
+		jmiVersionName.addActionListener(e -> {
+			JTextField jtf = new JTextField();
+			jtf.setEditable(false);
+			jtf.setText(Config.CLIENT+" "+Config.VERSION);
+			JOptionPane.showMessageDialog(null, jtf, "Version", JOptionPane.PLAIN_MESSAGE);
 
-			public void actionPerformed(ActionEvent e) {
-				JTextField jtf = new JTextField();
-				jtf.setEditable(false);
-				jtf.setText(Config.CLIENT+" "+Config.VERSION);
-				JOptionPane.showMessageDialog(null, jtf, "Version", JOptionPane.PLAIN_MESSAGE);
-
-			}
 		});
 	    jmHelp.add(jmiVersionName);
 		
@@ -196,66 +184,42 @@ public class Gui {
        
 		
 		
-		jmiAddContact.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GuiContactAdd guica = new GuiContactAdd();
-				// guica.setBuddy(null); // for when editing a buddy
-				guica.setVisible(true);
-			}
+		jmiAddContact.addActionListener(e -> {
+			GuiContactAdd guica = new GuiContactAdd();
+			// guica.setBuddy(null); // for when editing a buddy
+			guica.setVisible(true);
 		});
 		
 		
-		jmiPingAttack.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GuiPingAttack guica = new GuiPingAttack();
-				// guica.setBuddy(null); // for when editing a buddy
-				guica.setVisible(true);
-			}
+		jmiPingAttack.addActionListener(e -> {
+			GuiPingAttack guica = new GuiPingAttack();
+			// guica.setBuddy(null); // for when editing a buddy
+			guica.setVisible(true);
 		});
 		
-		jmiSettings.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// JOptionPane.showMessageDialog(null, "Not Implemented", "Not Implemented", JOptionPane.ERROR_MESSAGE);
-				GuiSettings guis = new GuiSettings();
-				guis.setVisible(true);
-			}
+		jmiSettings.addActionListener(e -> {
+			// JOptionPane.showMessageDialog(null, "Not Implemented", "Not Implemented", JOptionPane.ERROR_MESSAGE);
+			GuiSettings guis = new GuiSettings();
+			guis.setVisible(true);
 		});
-		jmiGUISettings.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GuiIcon guis = new GuiIcon();
-				guis.setVisible(true);
-			}
+		jmiGUISettings.addActionListener(e -> {
+			GuiIcon guis = new GuiIcon();
+			guis.setVisible(true);
 		});
-		jmiProfileSettings.addActionListener(new ActionListener() {
+		jmiProfileSettings.addActionListener(e -> {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				GuiProfile guis = new GuiProfile(null,true);
-				guis.setVisible(true);
-			}
+			GuiProfile guis = new GuiProfile(null,true);
+			guis.setVisible(true);
 		});
-		jmiExit.addActionListener(new ActionListener() {
+		jmiExit.addActionListener(e -> {
+			/**
+			 * We try to disconnect all our contacts
+			 * before exiting, this kills all process
+			 */
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				/**
-				 * We try to disconnect all our contacts
-				 * before exiting, this kills all process
-				 */
-				
-				BuddyList.disconnect_all(); //disconnect from all buddies to stop processes
-				TorLoader.cleanUp(); //clean up tor process
-				System.exit(0);
-			}
+			BuddyList.disconnect_all(); //disconnect from all buddies to stop processes
+			TorLoader.cleanUp(); //clean up tor process
+			System.exit(0);
 		});
 
 		//jmFile.add(jmiPingAttack);
@@ -290,7 +254,7 @@ public class Gui {
 		jt.setRootVisible(false);
 		jt.setCellRenderer(new TCIconRenderer(jt));
 
-		jt.setRowHeight(Config.icon_size + Config.icon_space);
+		jt.setRowHeight(Config.getIcon_size() + Config.getIcon_space());
 		ToolTipManager.sharedInstance().registerComponent(jt);
 
 		jt.addMouseListener(new MouseListener() {
@@ -518,7 +482,7 @@ public class Gui {
 			node.removeFromParent();
 		nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
-		if (buddy.getAddress().equals(Config.us)) {
+		if (buddy.getAddress().equals(Config.getUs())) {
 			((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeblack, 0);
 		} else {
 			((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeblack, buddyNodeblack.getChildCount());
@@ -541,7 +505,7 @@ public class Gui {
 				node.removeFromParent();
 			nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
-			if (buddy.getAddress().equals(Config.us)) {
+			if (buddy.getAddress().equals(Config.getUs())) {
 				((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
 			} else {
 				((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
@@ -556,7 +520,7 @@ public class Gui {
 
 	public static void pardon(Buddy buddy) {
 
-		if (buddy.getStatus() >= Buddy.Status.ONLINE) {
+		if (buddy.getStatus() >= Status.ONLINE) {
 
 			MutableTreeNode node = nodeMap.remove(buddy.getAddress());
 			if (node != null) // remove entry in the gui
@@ -568,7 +532,7 @@ public class Gui {
 			nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
 			if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
-				if (buddy.getAddress().equals(Config.us)) {
+				if (buddy.getAddress().equals(Config.getUs())) {
 					((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
 				} else {
 					((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
@@ -577,7 +541,7 @@ public class Gui {
 					jt.expandRow(0);
 				}
 			} else {
-				if (buddy.getAddress().equals(Config.us)) {
+				if (buddy.getAddress().equals(Config.getUs())) {
 					((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, 0);
 				} else {
 					((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, buddyNodeon.getChildCount());
@@ -598,7 +562,7 @@ public class Gui {
 				node.removeFromParent();
 			nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
-			if (buddy.getAddress().equals(Config.us)) {
+			if (buddy.getAddress().equals(Config.getUs())) {
 				((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
 			} else {
 				((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, buddyNode.getChildCount());
@@ -620,28 +584,28 @@ public class Gui {
 			Logger.oldOut.println(buddy + " changed from " + Buddy.getStatusName(oldStatus) + " to " + Buddy.getStatusName(newStatus));
 			
 			
-			if (newStatus == Buddy.Status.ONLINE && oldStatus != newStatus) {
-				if(Config.alert_on_status_change==1){
+			if (newStatus == Status.ONLINE && oldStatus != newStatus) {
+				if(Config.getAlert_on_status_change() ==1){
 					GuiAlert alert;
 					alert = new GuiAlert(buddy.toString() + " is online.");
 					alert.start();
 					}}
 
-			if (newStatus == Buddy.Status.AWAY && oldStatus != newStatus) {
-				if(Config.alert_on_status_change==1){
+			if (newStatus == Status.AWAY && oldStatus != newStatus) {
+				if(Config.getAlert_on_status_change() ==1){
 					GuiAlert alert;
 					alert = new GuiAlert(buddy.toString() + " is away.");
 					alert.start();
 					}}
 			
-			if (newStatus == Buddy.Status.XA && oldStatus != newStatus) {
-				if(Config.alert_on_status_change==1){
+			if (newStatus == Status.XA && oldStatus != newStatus) {
+				if(Config.getAlert_on_status_change() ==1){
 					GuiAlert alert;
 					alert = new GuiAlert(buddy.toString() + " is far away.");
 					alert.start();
 					}}
 			
-			if (newStatus >= Buddy.Status.ONLINE && oldStatus <= Buddy.Status.HANDSHAKE) {
+			if (newStatus >= Status.ONLINE && oldStatus <= Status.HANDSHAKE) {
 				
 				if (!BuddyList.black.containsKey(buddy.getAddress())) {
 					MutableTreeNode node = nodeMap.remove(buddy.getAddress());
@@ -654,7 +618,7 @@ public class Gui {
 					nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 					
 					if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
-						if (buddy.getAddress().equals(Config.us)) {
+						if (buddy.getAddress().equals(Config.getUs())) {
 							((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
 						} else {
 							((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
@@ -664,7 +628,7 @@ public class Gui {
 							jt.expandRow(0);
 						}
 					} else {
-						if (buddy.getAddress().equals(Config.us)) {
+						if (buddy.getAddress().equals(Config.getUs())) {
 							((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, 0);
 						} else {
 							((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, buddyNodeon.getChildCount());
@@ -675,9 +639,10 @@ public class Gui {
 						}
 					}
 
-					if (new File(Config.MESSAGE_DIR + buddy.getAddress() + ".txt").exists()) {
+					if (new File(Config.getMessageDir() + buddy.getAddress() + ".txt").exists()) {
 						try {
-							Scanner sc = new Scanner(new FileInputStream(Config.MESSAGE_DIR + buddy.getAddress() + ".txt"));
+							Scanner sc = new Scanner(new FileInputStream(
+									Config.getMessageDir() + buddy.getAddress() + ".txt"));
 							while (sc.hasNextLine()) {
 								try {
 									buddy.sendMessage(sc.nextLine());
@@ -687,7 +652,7 @@ public class Gui {
 								}
 							}
 							sc.close();
-							new File(Config.MESSAGE_DIR + buddy.getAddress() + ".txt").delete();
+							new File(Config.getMessageDir() + buddy.getAddress() + ".txt").delete();
 							getChatWindow(buddy, true, true).append("Time Stamp", "Delayed messages sent.\n");
 						} catch (IOException ioe) {
 							ioe.printStackTrace();
@@ -696,9 +661,9 @@ public class Gui {
 
 				}
 
-			} else if (oldStatus >= Buddy.Status.ONLINE && newStatus <= Buddy.Status.HANDSHAKE) {
+			} else if (oldStatus >= Status.ONLINE && newStatus <= Status.HANDSHAKE) {
 
-				if(Config.alert_on_status_change==1){
+				if(Config.getAlert_on_status_change() ==1){
 				GuiAlert alert;
 				alert = new GuiAlert(buddy.toString() + " is offline");
 				alert.start();
@@ -714,7 +679,7 @@ public class Gui {
 						node.removeFromParent();
 					nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
-					if (buddy.getAddress().equals(Config.us)) {
+					if (buddy.getAddress().equals(Config.getUs())) {
 						((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
 					} else {
 						((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, buddyNode.getChildCount());
@@ -762,7 +727,7 @@ public class Gui {
 			
 			if(right){ChatWindow.update_window(MessageType.RECEIVE_NORMAL, w,msg,null,"",!buddy.isFullyConnected());}
 			
-		if(Config.alert_on_message==1){
+		if(Config.getAlert_on_message() ==1){
 			if (!w.isFocused() && !(Buddy.isInBlackList(((Buddy) buddy).getAddress()))) {
 				if (alert != null && !alert.isFinished()){alert.kill();}
 				alert = new GuiAlert("New Message: "+buddy.toString());
@@ -788,7 +753,7 @@ public class Gui {
 				node.removeFromParent();
 			nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
-			if (buddy.getAddress().equals(Config.us)) {
+			if (buddy.getAddress().equals(Config.getUs())) {
 				((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
 			} else {
 				((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, buddyNode.getChildCount());

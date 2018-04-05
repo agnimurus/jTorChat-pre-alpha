@@ -13,7 +13,7 @@ public class out_page {
         *
         * Commit Date: Almost 2AM EST on 3/11/18 --> or should I say almost 3 *sigh*
         * */
-        if (Config.pageactive == 1) {
+        if (Config.getPageactive() == 1) {
 
             if (command.length() < 7) {// When nothing is choosen use index
                 command = "/page index";

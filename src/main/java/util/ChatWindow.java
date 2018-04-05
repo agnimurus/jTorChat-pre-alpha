@@ -56,7 +56,7 @@ public class ChatWindow {
 			window.append("Time Stamp", "(" + GuiChatWindow.getTime() + ") ");
 
 			if(TCPort.profile_name!=""){window.append("Me", delay+"* " + TCPort.profile_name+" ");}else
-			{window.append("Me", delay+"* " + Config.us+" ");}
+			{window.append("Me", delay+"* " + Config.getUs() +" ");}
 			window.addUrlText("Plain",newEntry + "\n");
 			break;
 
@@ -104,7 +104,8 @@ public class ChatWindow {
 				if (!addDelay) {
 					window.b.sendMessage(send);
 				} else {
-					FileOutputStream fos = new FileOutputStream(Config.MESSAGE_DIR + window.b.getAddress() + ".txt", true);
+					FileOutputStream fos = new FileOutputStream(
+							Config.getMessageDir() + window.b.getAddress() + ".txt", true);
 					fos.write(("[Delayed] "+send + "\n").getBytes());
 					fos.close();
 				}

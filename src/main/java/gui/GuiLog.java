@@ -142,7 +142,7 @@ public class GuiLog extends JFrame {
   }
 
   private static void trimText() {
-    if (Config.fulllog == 0) {
+    if (Config.getFulllog() == 0) {
       if (guiLog.logTextPane.getDocument().getLength() > 10000) {
         guiLog.logTextPane.setCaretPosition(0);
         int i = guiLog.logTextPane.getText().indexOf("\n");

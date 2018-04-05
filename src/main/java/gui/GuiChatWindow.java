@@ -61,7 +61,7 @@ public class GuiChatWindow extends JFrame {
 	public void addUrlText(String type, String text) {
 
 
-		if (Config.ClickableLinks == 0)
+		if (Config.getClickableLinks() == 0)
 		{
 			append(type, text);
 		}
