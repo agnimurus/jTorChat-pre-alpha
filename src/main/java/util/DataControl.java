@@ -19,7 +19,7 @@ public class DataControl {
 
   public static void init() {
     Config.setBaseDir(get_base_pwd());
-    Config.setDataDir("data/");
+    Config.setDataDir("");
     Config.setConfigDir(Config.getBaseDir() + Config.getDataDir() + "config/");
     Config.setDownloadDir(Config.getBaseDir() + Config.getDataDir() + "downloads/");
     Config.setLogDir(Config.getBaseDir() + Config.getDataDir() + "log/");
@@ -45,7 +45,7 @@ public class DataControl {
   }
 
   public static String get_base_pwd() {
-    String os = System.getProperty("os.name").toLowerCase();
+    /*String os = System.getProperty("os.name").toLowerCase();
     String BASE_DIR = null;
 
     try {
@@ -79,7 +79,8 @@ public class DataControl {
       e.printStackTrace();
     }
 
-    return BASE_DIR;
+    return BASE_DIR;*/
+    return "";
   }
 
 

@@ -56,6 +56,7 @@ public class TorLoader {
 							if (Config.getLoadTor() == 1)  {
 								// only load portable tor if not testing
 								ProcessBuilder procBuilder = instantiateProcessBuilder();
+                Logger.log(Logger.NOTICE, CLASS_NAME, "Instantiated Proc Builder");
 
 								procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
 								System.out.println(new File(Config.getTorDir()).getAbsolutePath());
@@ -104,7 +105,12 @@ public class TorLoader {
 												torLoading.gettextArea1().setText("Wait for a answer!");
 												GuiKillTor.listenerport();
 												process.destroy();
+
+                        //Logger.log(Logger.NOTICE, CLASS_NAME, "Starting Proc Builder");
 												procBuilder = instantiateProcessBuilder();
+												//Logger.log(Logger.NOTICE, CLASS_NAME, "Instantiated Proc Builder");
+
+
 												procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
 												System.out.println(new File(Config.getTorDir()).getAbsolutePath());
 												procBuilder.redirectErrorStream(true);
@@ -220,10 +226,10 @@ public class TorLoader {
 			// PROCESSBUILDER settings for LINUX and UNIX
 			Logger.log(Logger.NOTICE, CLASS_NAME, "Start portable tor in *nix or linux");
 
-			pb = new ProcessBuilder(Config.getTorDir() + Config.getTorbinary(),"-f", Config.getTorDir() + Config
+			pb = new ProcessBuilder(Config.getTorbinary(),"-f", Config
 					.getTortorrc());
-			pb.environment().put("LD_LIBRARY_PATH", Config.getTorDir() + Config.getTorLinlib());
-			pb.environment().put("LDPATH", Config.getTorDir() +"linux/lib/");
+			pb.environment().put("LD_LIBRARY_PATH", Config.getTorLinlib());
+			pb.environment().put("LDPATH", "linux/lib/");
 
 		} else {
 			Logger.log(Logger.NOTICE, CLASS_NAME,"Can't detect OS type, using system tor (need system tor to work)");
