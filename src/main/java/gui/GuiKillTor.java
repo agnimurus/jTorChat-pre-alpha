@@ -1,14 +1,19 @@
-
-
 package gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
-
-import javax.swing.*;
-
 import core.Config;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.LayoutStyle;
 
 
 @SuppressWarnings("serial")
@@ -26,6 +31,7 @@ public class GuiKillTor extends JFrame {
   private JButton button1;
   private JButton button4;
   private JLabel label5;
+
   public GuiKillTor() {
     initComponents();
   }

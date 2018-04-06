@@ -1,11 +1,10 @@
 package listeners;
 
-import java.io.InputStream;
-
 import core.Buddy;
-
+import java.io.InputStream;
 
 
 public interface IncomingCommandListener {
-	public void onCommand(Buddy buddy, String command, InputStream is);
+
+  public void onCommand(Buddy buddy, String command, InputStream is);
 }

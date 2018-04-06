@@ -2,13 +2,11 @@ package core;
 
 import gui.Gui;
 import gui.GuiLog;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Scanner;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;

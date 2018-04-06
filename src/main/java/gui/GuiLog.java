@@ -1,24 +1,20 @@
 package gui;
 
+import core.Config;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.event.*;
-
-
-import javax.swing.*;
-
+import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-
-import core.Config;
-
-
 import util.LogWriter;
 
 @SuppressWarnings("serial")

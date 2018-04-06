@@ -1,8 +1,12 @@
 package util;
 
+import core.BuddyList;
+import core.Config;
 import core.Language;
+import core.Logger;
+import core.TCPort;
+import core.TorLoader;
 import gui.Gui;
-
 import java.awt.AWTException;
 import java.awt.Font;
 import java.awt.Image;
@@ -16,16 +20,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
-
-import core.Buddy;
-import core.BuddyList;
-import core.Config;
-import core.Logger;
-import core.TCPort;
-import core.TorLoader;
 
 
 public class Tray {

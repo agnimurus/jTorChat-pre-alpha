@@ -3,7 +3,6 @@ package core;
 
 import java.io.File;
 import java.util.Properties;
-
 import util.ConfigWriter;
 import util.DataControl;
 import util.Util;

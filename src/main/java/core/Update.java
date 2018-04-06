@@ -5,75 +5,78 @@ import util.RequestHTTP;
 
 public class Update {
 
-	public static String loadUpdate(String remote_bl_URL) {
-		String outversion = null;
+  public static String loadUpdate(String remote_bl_URL) {
+    String outversion = null;
 
-		ArrayList<String> input = RequestHTTP.load(remote_bl_URL);
-		String b[];
+    ArrayList<String> input = RequestHTTP.load(remote_bl_URL);
+    String b[];
 
-		for (int i = 0; i < input.size(); i++) {
-			String l = input.get(i);
+    for (int i = 0; i < input.size(); i++) {
+      String l = input.get(i);
 
-			if(l.startsWith("<version!")) {
-				b=l.split("!");
-				if (b.length == 5)
-				{
-					outversion = b[1] +"."+ b[2] +"."+ b[3];    	
-				}
-			}
+      if (l.startsWith("<version!")) {
+        b = l.split("!");
+        if (b.length == 5) {
+          outversion = b[1] + "." + b[2] + "." + b[3];
+        }
+      }
 
-			if(l.startsWith("<CLOSE_STREAM>"))//This is bad practice --> add to loop condition instead?
-				break;
-		}
+      if (l.startsWith("<CLOSE_STREAM>"))//This is bad practice --> add to loop condition instead?
+      {
+        break;
+      }
+    }
 
-		if(outversion != null) {
-			Logger.log(Logger.INFO, "loadUpdate","Compare: " + Config.BUILD +" with "+ outversion);
+    if (outversion != null) {
+      Logger.log(Logger.INFO, "loadUpdate", "Compare: " + Config.BUILD + " with " + outversion);
 
-			if(isOutdated(Config.BUILD, outversion)) {
-				return Language.langtext[52];
-			} else {
-				if(Config.getAllcheckupdate() == 1) {
-					Config.setAllcheckupdate(0);
-					return Language.langtext[53];
-				} else 
-					return"close";
-			}
-		} else
-			return Language.langtext[54];
-	}
+      if (isOutdated(Config.BUILD, outversion)) {
+        return Language.langtext[52];
+      } else {
+        if (Config.getAllcheckupdate() == 1) {
+          Config.setAllcheckupdate(0);
+          return Language.langtext[53];
+        } else {
+          return "close";
+        }
+      }
+    } else {
+      return Language.langtext[54];
+    }
+  }
 
-	private static boolean isOutdated(String buildVersion, String outVersion) {
-		boolean isOutdated = false;
-		String[] buildVersionComponents = buildVersion.split("[.]");
-		String[] outVersionComponents = outVersion.split("[.]");
+  private static boolean isOutdated(String buildVersion, String outVersion) {
+    boolean isOutdated = false;
+    String[] buildVersionComponents = buildVersion.split("[.]");
+    String[] outVersionComponents = outVersion.split("[.]");
 
-		int buildVersionIndex = 0;
-		int outVersionIndex = 0;
+    int buildVersionIndex = 0;
+    int outVersionIndex = 0;
 
+    while (buildVersionIndex < buildVersionComponents.length
+        || outVersionIndex < outVersionComponents.length) {
 
-		while (buildVersionIndex < buildVersionComponents.length || outVersionIndex < outVersionComponents.length) {
+      //If Version Index is within buildVersionComponents' size, set the current buildVersionComponent. Else, set it equal to 0
+      final int currBuildVersionComponent = (buildVersionIndex < buildVersionComponents.length) ?
+          Integer.parseInt(buildVersionComponents[buildVersionIndex]) : 0;
 
-			//If Version Index is within buildVersionComponents' size, set the current buildVersionComponent. Else, set it equal to 0
-			final int currBuildVersionComponent = (buildVersionIndex < buildVersionComponents.length) ? 
-					Integer.parseInt(buildVersionComponents[buildVersionIndex]) : 0;
+      //If out Version Index is within out version components array, set it equal to the component at the index. Else, --> 0
+      final int outBuildVersionComponent = (outVersionIndex < outVersionComponents.length) ?
+          Integer.parseInt(outVersionComponents[outVersionIndex]) : 0;
 
-					//If out Version Index is within out version components array, set it equal to the component at the index. Else, --> 0
-					final int outBuildVersionComponent = (outVersionIndex < outVersionComponents.length) ?
-							Integer.parseInt(outVersionComponents[outVersionIndex]) : 0;
+      if (currBuildVersionComponent < outBuildVersionComponent) {
+        isOutdated = true;
+        break; //Let's figure out a way to avoid this break
+      } else if (currBuildVersionComponent > outBuildVersionComponent) {
+        // result is false
+        break; //Let's figure out a way to avoid this break
+      }
 
-							if (currBuildVersionComponent < outBuildVersionComponent) {
-								isOutdated = true;
-								break; //Let's figure out a way to avoid this break
-							} else if (currBuildVersionComponent > outBuildVersionComponent) {
-								// result is false
-								break; //Let's figure out a way to avoid this break
-							}
+      buildVersionIndex++;
+      outVersionIndex++;
+    }
 
-							buildVersionIndex++;
-							outVersionIndex++;
-		}
-
-		return isOutdated;
-	}
+    return isOutdated;
+  }
 }
 

@@ -1,16 +1,11 @@
 package util;
 
-import gui.GuiLog;
-import gui.GuiTorLoading;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URLDecoder;
-
 import core.Config;
 import core.Logger;
-import core.TCPort;
 import core.TorLoader;
+import gui.GuiLog;
+import gui.GuiTorLoading;
+import java.io.File;
 
 
 public class DataControl {

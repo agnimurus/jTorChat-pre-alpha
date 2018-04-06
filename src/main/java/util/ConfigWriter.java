@@ -1,16 +1,15 @@
 package util;
 
+import core.Buddy;
+import core.Config;
+import core.Logger;
+import core.TCPort;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import core.Buddy;
-import core.Config;
-import core.Logger;
-import core.TCPort;
 
 
 public class ConfigWriter {

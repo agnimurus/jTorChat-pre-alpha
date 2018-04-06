@@ -29,14 +29,16 @@ public enum CommandType {
 
   /**
    * Case-insensititve way to extract CommandType enum from a string value.
+   *
    * @param value: A string representation of a CommandType constant
    * @return The corresponding CommandType constant
    * @throws IllegalArgumentException If no constant with a corresponding value is found
    */
   public static CommandType fromValue(String value) throws IllegalArgumentException {
     for (CommandType cmd : CommandType.values()) {
-      if (cmd.toString().equalsIgnoreCase(value))
+      if (cmd.toString().equalsIgnoreCase(value)) {
         return cmd;
+      }
     }
     throw new IllegalArgumentException("No constant with value \"" + value + "\" found");
   }

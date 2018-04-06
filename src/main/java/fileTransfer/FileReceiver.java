@@ -1,6 +1,9 @@
 package fileTransfer;
 
+import core.Buddy;
+import core.Config;
 import core.Language;
+import core.Logger;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,10 +13,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import core.Buddy;
-import core.Config;
-import core.Logger;
 
 // Pretty much direct translation from the python torchat source.
 // Original comments mainly preserved with occasional original 

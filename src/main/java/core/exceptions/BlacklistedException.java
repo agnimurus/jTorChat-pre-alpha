@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class BlacklistedException extends Exception{
+public class BlacklistedException extends Exception {
 
   public BlacklistedException() {
     super();

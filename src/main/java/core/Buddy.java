@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Random;
 import java.util.Scanner;
-
 import util.ConfigWriter;
 import util.Status;
 import util.StatusUtils;

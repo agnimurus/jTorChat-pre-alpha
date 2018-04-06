@@ -1,15 +1,34 @@
 package gui;
 
-import core.Language;
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-
 import core.Config;
+import core.Language;
 import core.TCPort;
-
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import util.ConfigWriter;
 
 
@@ -57,6 +76,7 @@ public class GuiSettings extends JFrame {
   private JLabel label7;
   private JCheckBox checkBox11;
   private JButton button1;
+
   public GuiSettings() {
 
     setResizable(false);
@@ -296,7 +316,6 @@ public class GuiSettings extends JFrame {
     } else {
       Config.setOfflineMod(0);
     }
-
 
     TCPort.sendMyProfile();
     ConfigWriter.saveall(0);
