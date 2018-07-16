@@ -272,6 +272,7 @@ public class TCPort {
         launched = false;
       }
       try {
+        // I'm 99% sure this violates fundamental OOP design principles.
         Class<?> c = Class.forName("gui.Gui");
         Object i = c.getDeclaredField("instance").get(null);
         Field f = c.getDeclaredField("f");

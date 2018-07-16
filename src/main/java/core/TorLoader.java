@@ -21,138 +21,134 @@ public class TorLoader {
     final GuiTorLoading torLoading = new GuiTorLoading();
     torLoading.getProgressBar1().setIndeterminate(true);
     torLoading.setVisible(true);
-    ThreadManager.registerWork(ThreadManager.DAEMON, new Runnable() {
+    ThreadManager.registerWork(ThreadManager.DAEMON, () -> {
 
-      @Override
-      public void run() {
+      if (Config.getAnswer() != null) {
+        // if a Language file NOT found
+        Logger.log(Logger.FATAL, CLASS_NAME, Config.getAnswer());
+        GuiLog.getGuiLog().setVisible(true);
+        torLoading.getProgressBar1().setValue(0);
+        torLoading.getProgressBar1().setIndeterminate(false);
+        torLoading.gettextArea1().setText(Config.getAnswer());
+      } else {
 
-        if (Config.getAnswer() != null) {
-          // if a Language file NOT found
-          Logger.log(Logger.FATAL, CLASS_NAME, Config.getAnswer());
-          GuiLog.getGuiLog().setVisible(true);
-          torLoading.getProgressBar1().setValue(0);
-          torLoading.getProgressBar1().setIndeterminate(false);
-          torLoading.gettextArea1().setText(Config.getAnswer());
-        } else {
+        if (Config.getOfflineMod() == 0) {
+          Boolean ssfail = false;
+          try {
+            ServerSocket ss = new ServerSocket(Config.getLocalPort());
+            ss.close();
+          } catch (IOException e) {
+            ssfail = true;
+          }
 
-          if (Config.getOfflineMod() == 0) {
-            Boolean ssfail = false;
-            try {
-              ServerSocket ss = new ServerSocket(Config.getLocalPort());
-              ss.close();
-            } catch (IOException e) {
-              ssfail = true;
-            }
+          if (ssfail) {
+            Logger.log(Logger.FATAL, "TCServ", "Failed to test local server.");
+            torLoading.getProgressBar1().setValue(0);
+            torLoading.gettextArea1()
+                .setText("Can not bind a port for jtorchat, is another jtorchat instance activ?");
+            torLoading.getProgressBar1().setIndeterminate(false);
+          } else {
 
-            if (ssfail) {
-              Logger.log(Logger.FATAL, "TCServ", "Failed to test local server.");
-              torLoading.getProgressBar1().setValue(0);
-              torLoading.gettextArea1()
-                  .setText("Can not bind a port for jtorchat, is another jtorchat instance activ?");
-              torLoading.getProgressBar1().setIndeterminate(false);
-            } else {
+            if (Config.getLoadTor() == 1) {
+              // only load portable tor if not testing
+              ProcessBuilder procBuilder = instantiateProcessBuilder();
+              Logger.log(Logger.NOTICE, CLASS_NAME, "Instantiated Proc Builder");
 
-              if (Config.getLoadTor() == 1) {
-                // only load portable tor if not testing
-                ProcessBuilder procBuilder = instantiateProcessBuilder();
-                Logger.log(Logger.NOTICE, CLASS_NAME, "Instantiated Proc Builder");
+              procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
+              System.out.println(new File(Config.getTorDir()).getAbsolutePath());
+              procBuilder.redirectErrorStream(true);
 
-                procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
-                System.out.println(new File(Config.getTorDir()).getAbsolutePath());
-                procBuilder.redirectErrorStream(true);
+              try {
+                process = procBuilder.start();
+                Scanner sc = new Scanner(process.getInputStream());
+                while (sc.hasNextLine()) {
+                  String line = sc.nextLine();
+                  Logger.log(Logger.INFO, "Tor", line);
 
-                try {
-                  process = procBuilder.start();
-                  Scanner sc = new Scanner(process.getInputStream());
-                  while (sc.hasNextLine()) {
-                    String line = sc.nextLine();
-                    Logger.log(Logger.INFO, "Tor", line);
-
-                    // New progress function (obfsproxy has more then three progress messages)
-                    if (line.contains("Bootstrapped ")) {
-                      String[] starting = line.split("%");
-                      if (starting.length == 2) {
-                        starting = starting[0].split(" ");
-                        if (starting.length == 6) {
-                          int starting3 = Integer.parseInt(starting[5]);
-                          if (starting3 <= 100 || starting3 > 0) {
-                            torLoading.getProgressBar1().setValue(Integer.parseInt(starting[5]));
-                            torLoading.gettextArea1().setText(Language.langtext[51]);
-                            torLoading.getProgressBar1().setIndeterminate(false);
-                            if (starting3 == 100) {
-                              synchronized (loadLock) {
-                                Config.setUs(new Scanner(
-                                    new FileInputStream(
-                                        Config.getTorDir() + "hidden_service/hostname"))
-                                    .nextLine()
-                                    .replace(".onion", ""));
-                                Logger.log(Logger.NOTICE, CLASS_NAME, "Set 'us' to " + Config
-                                    .getUs());
-                                loadLock.notifyAll();
-                                torLoading.dispose();
-                              }
+                  // New progress function (obfsproxy has more then three progress messages)
+                  if (line.contains("Bootstrapped ")) {
+                    String[] starting = line.split("%");
+                    if (starting.length == 2) {
+                      starting = starting[0].split(" ");
+                      if (starting.length == 6) {
+                        int starting3 = Integer.parseInt(starting[5]);
+                        if (starting3 <= 100 || starting3 > 0) {
+                          torLoading.getProgressBar1().setValue(Integer.parseInt(starting[5]));
+                          torLoading.gettextArea1().setText(Language.langtext[51]);
+                          torLoading.getProgressBar1().setIndeterminate(false);
+                          if (starting3 == 100) {
+                            synchronized (loadLock) {
+                              Config.setUs(new Scanner(
+                                  new FileInputStream(
+                                      Config.getTorDir() + "hidden_service/hostname"))
+                                  .nextLine()
+                                  .replace(".onion", ""));
+                              Logger.log(Logger.NOTICE, CLASS_NAME, "Set 'us' to " + Config
+                                  .getUs());
+                              loadLock.notifyAll();
+                              torLoading.dispose();
                             }
                           }
                         }
                       }
                     }
+                  }
 
-                    if (line.contains("Failed to bind one of the listener")) {
-                      Logger.log(Logger.FATAL, CLASS_NAME, "The listener Port is in use.");
+                  if (line.contains("Failed to bind one of the listener")) {
+                    Logger.log(Logger.FATAL, CLASS_NAME, "The listener Port is in use.");
 
-                      if (GuiKillTor.newpb == 0) {
-                        torLoading.gettextArea1().setText("Wait for a answer!");
-                        GuiKillTor.listenerport();
-                        process.destroy();
+                    if (GuiKillTor.newpb == 0) {
+                      torLoading.gettextArea1().setText("Wait for a answer!");
+                      GuiKillTor.listenerport();
+                      process.destroy();
 
-                        //Logger.log(Logger.NOTICE, CLASS_NAME, "Starting Proc Builder");
-                        procBuilder = instantiateProcessBuilder();
-                        //Logger.log(Logger.NOTICE, CLASS_NAME, "Instantiated Proc Builder");
+                      //Logger.log(Logger.NOTICE, CLASS_NAME, "Starting Proc Builder");
+                      procBuilder = instantiateProcessBuilder();
+                      //Logger.log(Logger.NOTICE, CLASS_NAME, "Instantiated Proc Builder");
 
-                        procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
-                        System.out.println(new File(Config.getTorDir()).getAbsolutePath());
-                        procBuilder.redirectErrorStream(true);
-                        process = procBuilder.start();
-                        sc = new Scanner(process.getInputStream());
-                        GuiKillTor.newpb = 2;
-                      } else {
-                        torLoading.getProgressBar1().setValue(0);
-                        torLoading.getProgressBar1().setIndeterminate(false);
-                        torLoading.gettextArea1().setText(Language.langtext[48]);
-                      }
-                    }
-
-                    if (line.contains("Network is unreachable")) {
-                      Logger.log(Logger.FATAL, CLASS_NAME, "Network is unreachable.");
+                      procBuilder.directory(new File(Config.getTorDir()).getAbsoluteFile());
+                      System.out.println(new File(Config.getTorDir()).getAbsolutePath());
+                      procBuilder.redirectErrorStream(true);
+                      process = procBuilder.start();
+                      sc = new Scanner(process.getInputStream());
+                      GuiKillTor.newpb = 2;
+                    } else {
                       torLoading.getProgressBar1().setValue(0);
                       torLoading.getProgressBar1().setIndeterminate(false);
-                      torLoading.gettextArea1().setText("Network is unreachable.");
-                    }
-
-                    if (line.contains("broken state. Dying.")) {
-                      Logger.log(Logger.FATAL, CLASS_NAME, "Tor has died apparently, Ja.");
-                      GuiLog.getGuiLog().setVisible(true);
-                      torLoading.getProgressBar1().setValue(0);
-                      torLoading.getProgressBar1().setIndeterminate(false);
-                      torLoading.gettextArea1().setText(Language.langtext[49]);
+                      torLoading.gettextArea1().setText(Language.langtext[48]);
                     }
                   }
-                  sc.close();
-                } catch (IOException e) {
-                  Logger.log(Logger.SEVERE, CLASS_NAME, e.getLocalizedMessage());
-                  if (e.getLocalizedMessage().contains("Cannot")) {
+
+                  if (line.contains("Network is unreachable")) {
+                    Logger.log(Logger.FATAL, CLASS_NAME, "Network is unreachable.");
+                    torLoading.getProgressBar1().setValue(0);
+                    torLoading.getProgressBar1().setIndeterminate(false);
+                    torLoading.gettextArea1().setText("Network is unreachable.");
+                  }
+
+                  if (line.contains("broken state. Dying.")) {
+                    Logger.log(Logger.FATAL, CLASS_NAME, "Tor has died apparently, Ja.");
                     GuiLog.getGuiLog().setVisible(true);
                     torLoading.getProgressBar1().setValue(0);
                     torLoading.getProgressBar1().setIndeterminate(false);
-                    torLoading.gettextArea1().setText(Language.langtext[50]);
+                    torLoading.gettextArea1().setText(Language.langtext[49]);
                   }
+                }
+                sc.close();
+              } catch (IOException e) {
+                Logger.log(Logger.SEVERE, CLASS_NAME, e.getLocalizedMessage());
+                if (e.getLocalizedMessage().contains("Cannot")) {
+                  GuiLog.getGuiLog().setVisible(true);
+                  torLoading.getProgressBar1().setValue(0);
+                  torLoading.getProgressBar1().setIndeterminate(false);
+                  torLoading.gettextArea1().setText(Language.langtext[50]);
                 }
               }
             }
-
-          } else {
-            torLoading.dispose();
           }
+
+        } else {
+          torLoading.dispose();
         }
       }
     }, "Starting Tor.", "Tor Monitor Thread");
