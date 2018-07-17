@@ -260,12 +260,12 @@ public class TCPort {
           Logger
               .log(Logger.WARNING, "The End", "Error saving buddies: " + e1.getLocalizedMessage());
         }
-        for (Buddy b : ((HashMap<String, Buddy>) BuddyList.buds.clone()).values()) {
+        for (Buddy buddy : ((HashMap<String, Buddy>) BuddyList.buds.clone()).values()) {
           try {
-            b.remove();
+            buddy.remove();
           } catch (IOException e1) {
             Logger.log(Logger.WARNING, "The End",
-                "Error removing buddy " + (b == null ? "null" : b.toString(true)) + ": " + e1
+                "Error removing buddy " + (buddy == null ? "null" : buddy.toString(true)) + ": " + e1
                     .getLocalizedMessage());
           }
         }
