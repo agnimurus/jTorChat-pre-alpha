@@ -206,9 +206,10 @@ public class TorLoader {
 
       // if so, then start tor.exe with torrc.txt
       Logger.log(Logger.NOTICE, CLASS_NAME, "Start portable tor in windows");
-      pb = new ProcessBuilder(Config.getTorDir() + Config.getTorbinary(), "-f",
-          Config.getTorDir() + Config
-              .getTortorrc());
+      pb = new ProcessBuilder(Config.getTorDir() + Config.getTorbinary(), "-f", /*Already in Tor/ directory*/Config.getTortorrc());
+
+      pb.environment().put("LD_LIBRARY_PATH", Config.getTorWinLib());
+      pb.environment().put("LDPATH", "windows/lib/");
 
     } else if (Config.getOs().contains("nix") || Config.getOs().contains("nux")) {
 

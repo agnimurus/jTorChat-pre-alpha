@@ -76,6 +76,7 @@ public class Config {
   private static String TorLinobf = "linux/jtorobf.lin";
   private static String TorLinlib = "linux/";
   private static String TorWin = "windows/jtor.exe";
+  private static String TorWinLib = "windows/";
   private static String TorWinobf = "windows/jtorobf.exe";
   private static String Torbinary;
   private static String controlfile = "controlfile";
@@ -581,4 +582,11 @@ public class Config {
     Tortorrc = tortorrc;
   }
 
+  public static String getTorWinLib() {
+    return TorWinLib;
+  }
+
+  public static void setTorWinLib(String torWinLib) {
+    TorWinLib = torWinLib;
+  }
 }

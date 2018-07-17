@@ -114,7 +114,7 @@ public class FileDrop {
    * @since 1.0
    */
   public FileDrop(
-      final java.io.PrintStream out,
+      final PrintStream out,
       final java.awt.Component c,
       final Listener listener) {
     this(out,  // Logging stream
@@ -141,7 +141,7 @@ public class FileDrop {
    * @since 1.0
    */
   public FileDrop(
-      final java.io.PrintStream out,
+      final PrintStream out,
       final java.awt.Component c,
       final boolean recursive,
       final Listener listener) {
@@ -213,7 +213,7 @@ public class FileDrop {
    * @since 1.0
    */
   public FileDrop(
-      final java.io.PrintStream out,
+      final PrintStream out,
       final java.awt.Component c,
       final javax.swing.border.Border dragBorder,
       final Listener listener) {
@@ -241,7 +241,7 @@ public class FileDrop {
    * @since 1.0
    */
   public FileDrop(
-      final java.io.PrintStream out,
+      final PrintStream out,
       final java.awt.Component c,
       final javax.swing.border.Border dragBorder,
       final boolean recursive,
@@ -289,7 +289,7 @@ public class FileDrop {
             java.awt.datatransfer.Transferable tr = evt.getTransferable();
 
             // Is it a file list?
-            if (tr.isDataFlavorSupported(java.awt.datatransfer.DataFlavor.javaFileListFlavor)) {
+            if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
               // Say we'll take it.
               //evt.acceptDrop ( java.awt.dnd.DnDConstants.ACTION_COPY_OR_MOVE );
               evt.acceptDrop(java.awt.dnd.DnDConstants.ACTION_COPY);
@@ -298,14 +298,14 @@ public class FileDrop {
               // Get a useful list
               @SuppressWarnings("rawtypes")
               java.util.List fileList = (java.util.List)
-                  tr.getTransferData(java.awt.datatransfer.DataFlavor.javaFileListFlavor);
+                  tr.getTransferData(DataFlavor.javaFileListFlavor);
               @SuppressWarnings({"rawtypes", "unused"})
               java.util.Iterator iterator = fileList.iterator();
 
               // Convert list to array
-              java.io.File[] filesTemp = new java.io.File[fileList.size()];
+              File[] filesTemp = new File[fileList.size()];
               fileList.toArray(filesTemp);
-              final java.io.File[] files = filesTemp;
+              final File[] files = filesTemp;
 
               // Alert listener to drop.
               if (listener != null) {
@@ -351,7 +351,7 @@ public class FileDrop {
               // END 2007-09-12 Nathan Blomquist -- Linux (KDE/Gnome) support added.
             }   // end else: not a file list
           }   // end try
-          catch (java.io.IOException io) {
+          catch (IOException io) {
             log(out, "FileDrop: IOException - abort:");
             io.printStackTrace(out);
             evt.rejectDrop();
@@ -432,7 +432,7 @@ public class FileDrop {
     try {
       @SuppressWarnings("rawtypes")
       java.util.List list = new java.util.ArrayList();
-      java.lang.String line = null;
+      String line = null;
       while ((line = bReader.readLine()) != null) {
         try {
           // kde seems to append a 0 char to the end of the reader
@@ -440,14 +440,14 @@ public class FileDrop {
             continue;
           }
 
-          java.io.File file = new java.io.File(new java.net.URI(line));
+          File file = new File(new java.net.URI(line));
           list.add(file);
         } catch (Exception ex) {
           log(out, "Error with " + line + ": " + ex.getMessage());
         }
       }
 
-      return (java.io.File[]) list.toArray(new File[list.size()]);
+      return (File[]) list.toArray(new File[list.size()]);
     } catch (IOException ex) {
       log(out, "FileDrop: IOException");
     }
@@ -456,7 +456,7 @@ public class FileDrop {
   // END 2007-09-12 Nathan Blomquist -- Linux (KDE/Gnome) support added.
 
 
-  private void makeDropTarget(final java.io.PrintStream out, final java.awt.Component c,
+  private void makeDropTarget(final PrintStream out, final java.awt.Component c,
       boolean recursive) {
     // Make drop target
     final java.awt.dnd.DropTarget dt = new java.awt.dnd.DropTarget();
@@ -507,12 +507,12 @@ public class FileDrop {
   /**
    * Determine if the dragged data is a file list.
    */
-  private boolean isDragOk(final java.io.PrintStream out,
+  private boolean isDragOk(final PrintStream out,
       final java.awt.dnd.DropTargetDragEvent evt) {
     boolean ok = false;
 
     // Get data flavors being dragged
-    java.awt.datatransfer.DataFlavor[] flavors = evt.getCurrentDataFlavors();
+    DataFlavor[] flavors = evt.getCurrentDataFlavors();
 
     // See if any of the flavors are a file list
     int i = 0;
@@ -520,7 +520,7 @@ public class FileDrop {
       // BEGIN 2007-09-12 Nathan Blomquist -- Linux (KDE/Gnome) support added.
       // Is the flavor a file list?
       final DataFlavor curFlavor = flavors[i];
-      if (curFlavor.equals(java.awt.datatransfer.DataFlavor.javaFileListFlavor) ||
+      if (curFlavor.equals(DataFlavor.javaFileListFlavor) ||
           curFlavor.isRepresentationClassReader()) {
         ok = true;
       }
@@ -545,7 +545,7 @@ public class FileDrop {
   /**
    * Outputs <tt>message</tt> to <tt>out</tt> if it's not null.
    */
-  private static void log(java.io.PrintStream out, String message) {   // Log message if requested
+  private static void log(PrintStream out, String message) {   // Log message if requested
     if (out != null) {
       out.println(message);
     }
@@ -570,12 +570,12 @@ public class FileDrop {
    * Removes the drag-and-drop hooks from the component and optionally from the all children. You
    * should call this if you add and remove components after you've set up the drag-and-drop.
    *
-   * @param out Optional {@link java.io.PrintStream} for logging drag and drop messages
+   * @param out Optional {@link PrintStream} for logging drag and drop messages
    * @param c The component to unregister
    * @param recursive Recursively unregister components within a container
    * @since 1.0
    */
-  public static boolean remove(java.io.PrintStream out, java.awt.Component c,
+  public static boolean remove(PrintStream out, java.awt.Component c,
       boolean recursive) {   // Make sure we support dnd.
     if (supportsDnD()) {
       log(out, "FileDrop: Removing drag-and-drop hooks.");
@@ -625,7 +625,7 @@ public class FileDrop {
      * @param files An array of <tt>File</tt>s that were dropped.
      * @since 1.0
      */
-    public abstract void filesDropped(java.io.File[] files);
+    public abstract void filesDropped(File[] files);
 
 
   }   // end inner-interface Listener
@@ -647,7 +647,7 @@ public class FileDrop {
   @SuppressWarnings("serial")
   public static class Event extends java.util.EventObject {
 
-    private java.io.File[] files;
+    private File[] files;
 
     /**
      * Constructs an {@link Event} with the array of files that were dropped and the {@link
@@ -657,7 +657,7 @@ public class FileDrop {
      * @source The event source
      * @since 1.1
      */
-    public Event(java.io.File[] files, Object source) {
+    public Event(File[] files, Object source) {
       super(source);
       this.files = files;
     }   // end constructor
@@ -668,7 +668,7 @@ public class FileDrop {
      * @return array of files that were dropped
      * @since 1.1
      */
-    public java.io.File[] getFiles() {
+    public File[] getFiles() {
       return files;
     }   // end getFiles
 
@@ -690,7 +690,7 @@ public class FileDrop {
    *      ...
    * </code></pre>
    * Or if you need to know when the data was actually dropped, like when you're moving data out of
-   * a list, say, you can use the {@link TransferableObject.Fetcher} inner class to return your
+   * a list, say, you can use the {@link Fetcher} inner class to return your
    * object Just in Time. For example:
    * <pre><code>
    *      ...
@@ -704,7 +704,7 @@ public class FileDrop {
    *      ...
    * </code></pre>
    *
-   * The {@link java.awt.datatransfer.DataFlavor} associated with {@link TransferableObject} has the
+   * The {@link DataFlavor} associated with {@link TransferableObject} has the
    * representation class
    * <tt>net.iharder.dnd.TransferableObject.class</tt> and MIME type
    * <tt>application/x-net.iharder.dnd.TransferableObject</tt>.
@@ -729,7 +729,7 @@ public class FileDrop {
 
 
     /**
-     * The default {@link java.awt.datatransfer.DataFlavor} for {@link TransferableObject} has the
+     * The default {@link DataFlavor} for {@link TransferableObject} has the
      * representation class
      * <tt>net.iharder.dnd.TransferableObject.class</tt>
      * and the MIME type
@@ -737,14 +737,14 @@ public class FileDrop {
      *
      * @since 1.1
      */
-    public final static java.awt.datatransfer.DataFlavor DATA_FLAVOR =
-        new java.awt.datatransfer.DataFlavor(FileDrop.TransferableObject.class, MIME_TYPE);
+    public final static DataFlavor DATA_FLAVOR =
+        new DataFlavor(TransferableObject.class, MIME_TYPE);
 
 
     private Fetcher fetcher;
     private Object data;
 
-    private java.awt.datatransfer.DataFlavor customFlavor;
+    private DataFlavor customFlavor;
 
 
     /**
@@ -758,7 +758,7 @@ public class FileDrop {
      */
     public TransferableObject(Object data) {
       this.data = data;
-      this.customFlavor = new java.awt.datatransfer.DataFlavor(data.getClass(), MIME_TYPE);
+      this.customFlavor = new DataFlavor(data.getClass(), MIME_TYPE);
     }   // end constructor
 
 
@@ -783,25 +783,25 @@ public class FileDrop {
      * type
      * <tt>application/x-net.iharder.dnd.TransferableObject</tt>.
      *
-     * @param dataClass The {@link java.lang.Class} to use in the custom data flavor
+     * @param dataClass The {@link Class} to use in the custom data flavor
      * @param fetcher The {@link Fetcher} that will return the data object
      * @see Fetcher
      * @since 1.1
      */
     public TransferableObject(@SuppressWarnings("rawtypes") Class dataClass, Fetcher fetcher) {
       this.fetcher = fetcher;
-      this.customFlavor = new java.awt.datatransfer.DataFlavor(dataClass, MIME_TYPE);
+      this.customFlavor = new DataFlavor(dataClass, MIME_TYPE);
     }   // end constructor
 
     /**
-     * Returns the custom {@link java.awt.datatransfer.DataFlavor} associated with the encapsulated
+     * Returns the custom {@link DataFlavor} associated with the encapsulated
      * object or <tt>null</tt> if the {@link Fetcher} constructor was used without passing a {@link
-     * java.lang.Class}.
+     * Class}.
      *
      * @return The custom data flavor for the encapsulated object
      * @since 1.1
      */
-    public java.awt.datatransfer.DataFlavor getCustomDataFlavor() {
+    public DataFlavor getCustomDataFlavor() {
       return customFlavor;
     }   // end getCustomDataFlavor
 
@@ -812,23 +812,23 @@ public class FileDrop {
     /**
      * Returns a two- or three-element array containing first the custom data flavor, if one was
      * created in the constructors, second the default {@link #DATA_FLAVOR} associated with {@link
-     * TransferableObject}, and third the {@link java.awt.datatransfer.DataFlavor.stringFlavor}.
+     * TransferableObject}, and third the {@link DataFlavor.stringFlavor}.
      *
      * @return An array of supported data flavors
      * @since 1.1
      */
     @Override
-    public java.awt.datatransfer.DataFlavor[] getTransferDataFlavors() {
+    public DataFlavor[] getTransferDataFlavors() {
       if (customFlavor != null) {
-        return new java.awt.datatransfer.DataFlavor[]
+        return new DataFlavor[]
             {customFlavor,
                 DATA_FLAVOR,
-                java.awt.datatransfer.DataFlavor.stringFlavor
+                DataFlavor.stringFlavor
             };  // end flavors array
       } else {
-        return new java.awt.datatransfer.DataFlavor[]
+        return new DataFlavor[]
             {DATA_FLAVOR,
-                java.awt.datatransfer.DataFlavor.stringFlavor
+                DataFlavor.stringFlavor
             };  // end flavors array
       }
     }   // end getTransferDataFlavors
@@ -845,15 +845,15 @@ public class FileDrop {
      * @since 1.1
      */
     @Override
-    public Object getTransferData(java.awt.datatransfer.DataFlavor flavor)
-        throws java.awt.datatransfer.UnsupportedFlavorException, java.io.IOException {
+    public Object getTransferData(DataFlavor flavor)
+        throws java.awt.datatransfer.UnsupportedFlavorException, IOException {
       // Native object
       if (flavor.equals(DATA_FLAVOR)) {
         return fetcher == null ? data : fetcher.getObject();
       }
 
       // String
-      if (flavor.equals(java.awt.datatransfer.DataFlavor.stringFlavor)) {
+      if (flavor.equals(DataFlavor.stringFlavor)) {
         return fetcher == null ? data.toString() : fetcher.getObject().toString();
       }
 
@@ -871,14 +871,14 @@ public class FileDrop {
      * @since 1.1
      */
     @Override
-    public boolean isDataFlavorSupported(java.awt.datatransfer.DataFlavor flavor) {
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
       // Native object
       if (flavor.equals(DATA_FLAVOR)) {
         return true;
       }
 
       // String
-      if (flavor.equals(java.awt.datatransfer.DataFlavor.stringFlavor)) {
+      if (flavor.equals(DataFlavor.stringFlavor)) {
         return true;
       }
 

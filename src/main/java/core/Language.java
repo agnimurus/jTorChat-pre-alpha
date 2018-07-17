@@ -11,133 +11,131 @@ import util.ConfigWriter;
 
 public class Language {
 
-  public static int until_max = 87;
-  static String language;
-  static String native_language;
-  public static String langtext[] = new String[until_max];
+    public static int until_max = 87;
+    static String language;
+    static String native_language;
+    public static String langtext[] = new String[until_max];
 
-  public static String loadlang() {
-    Properties prop = new Properties();
+    public static String loadlang() {
+        Properties prop = new Properties();
 
-    prop = load_lang_prop(Config.getLang());
-    if (prop == null) {
-      Config.setLang(Config.getDlang());
-      prop = load_lang_prop(Config.getLangDir() + Config.getLang() + ".ini");
+        prop = load_lang_prop(Config.getLang());
+        if (prop == null) {
+            Config.setLang(Config.getDlang());
+            prop = load_lang_prop(Config.getLangDir() + Config.getLang() + ".ini");
+        }
+
+        //If prop is STILL null
+        if (prop == null) {
+            return "Can not load any Language file.";
+        }
+
+        language = ConfigWriter.assign("Language", null, prop);
+        native_language = ConfigWriter.assign("native_language", null, prop);
+
+        int until = Integer.parseInt(ConfigWriter.assign("until", "0", prop));
+        if (until > until_max) {
+            until = until_max;
+        }
+
+        load_from_until(0, until, prop);
+
+        if (until < until_max) {
+
+            prop = load_lang_prop(Config.getDlang());
+            int until2 = Integer.parseInt(ConfigWriter.assign("until", "0", prop));
+
+            if (until2 < until_max) {
+                return "The second Language file is not new only " + until2;
+            }
+            load_from_until(until, until_max, prop);
+        }
+
+        prop.clear();
+        return null;
     }
 
-    //If prop is STILL null
-    if (prop == null) {
-      return "Can not load any Language file.";
+    public static Properties load_lang_prop(String file) {
+        Properties prop = new Properties();
+
+        try {
+            prop.load(new InputStreamReader(new FileInputStream(Config.getLangDir() + file + ".ini"),
+                    "UTF-16"));
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+
+        return prop;
     }
 
-    language = ConfigWriter.assign("Language", null, prop);
-    native_language = ConfigWriter.assign("native_language", null, prop);
 
-    int until = Integer.parseInt(ConfigWriter.assign("until", "0", prop));
-    if (until > until_max) {
-      until = until_max;
+    public static void load_from_until(int min, int max, Properties prop) {
+        while (min < max) {
+            String count = Integer.toString(min);
+            if (count.length() == 1) {
+                count = "00000" + count;
+            }
+
+            if (count.length() == 2) {
+                count = "0000" + count;
+            }
+
+            if (count.length() == 3) {
+                count = "000" + count;
+            }
+
+            if (count.length() == 4) {
+                count = "00" + count;
+            }
+
+            if (count.length() == 5) {
+                count = "0" + count;
+            }
+
+            langtext[min] = ConfigWriter.assign("lang" + count, "lang" + count, prop);
+            min++;
+        }
     }
 
-    load_from_until(0, until, prop);
 
-    if (until < until_max) {
+    public static String[] get_info_from_file(String file) {
+        String[] info = new String[3];
+        String info_lang;
+        String info_n_lang;
+        String until;
 
-      prop = load_lang_prop(Config.getDlang());
-      int until2 = Integer.parseInt(ConfigWriter.assign("until", "0", prop));
+        Properties prop = new Properties();
+        try {
+            prop.load(new InputStreamReader(new FileInputStream(Config.getLangDir() + file + ".ini"),
+                    "UTF-16"));
+        } catch (FileNotFoundException e) {
+            info[0] = "Sorry but this Language not exist!";
+            info[1] = "empty";
+            info[2] = "empty";
+            return info;
+        } catch (IOException e) {
+            //TODO Remove empty catch block or do something in it
+        }
 
-      if (until2 < until_max) {
-        return "The second Language file is not new only " + until2;
-      }
-      load_from_until(until, until_max, prop);
+        info_lang = ConfigWriter.assign("Language", null, prop);
+        info_n_lang = ConfigWriter.assign("native_language", null, prop);
+        until = ConfigWriter.assign("until", null, prop);
+
+        info[0] = "The file has the Language is " + info_lang;
+        info[1] = "In the Language it means " + info_n_lang;
+        info[2] = "This Language file have " + until + "/" + until_max + " Entrys.";
+
+        return info;
     }
-
-    prop.clear();
-    return null;
-  }
-
-  public static Properties load_lang_prop(String file) {
-    Properties prop = new Properties();
-
-    try {
-      prop.load(new InputStreamReader(new FileInputStream(Config.getLangDir() + file + ".ini"),
-          "UTF-16"));
-    } catch (UnsupportedEncodingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return null;
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return null;
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return null;
-    }
-
-    return prop;
-  }
-
-
-  public static void load_from_until(int min, int max, Properties prop) {
-    while (min < max) {
-      String count = Integer.toString(min);
-      if (count.length() == 1) {
-        count = "00000" + count;
-      }
-
-      if (count.length() == 2) {
-        count = "0000" + count;
-      }
-
-      if (count.length() == 3) {
-        count = "000" + count;
-      }
-
-      if (count.length() == 4) {
-        count = "00" + count;
-      }
-
-      if (count.length() == 5) {
-        count = "0" + count;
-      }
-
-      langtext[min] = ConfigWriter.assign("lang" + count, "lang" + count, prop);
-      min++;
-    }
-  }
-
-
-  public static String[] get_info_from_file(String file) {
-    String[] info = new String[3];
-    String info_lang;
-    String info_n_lang;
-    String until;
-
-    Properties prop = new Properties();
-    try {
-      prop.load(new InputStreamReader(new FileInputStream(Config.getLangDir() + file + ".ini"),
-          "UTF-16"));
-    } catch (FileNotFoundException e) {
-      info[0] = "Sorry but this Language not exist!";
-      info[1] = "empty";
-      info[2] = "empty";
-      return info;
-    } catch (IOException e) {
-      //TODO Remove empty catch block or do something in it
-    }
-
-    info_lang = ConfigWriter.assign("Language", null, prop);
-    info_n_lang = ConfigWriter.assign("native_language", null, prop);
-    until = ConfigWriter.assign("until", null, prop);
-
-    info[0] = "The file has the Language is " + info_lang;
-    info[1] = "In the Language it means " + info_n_lang;
-    info[2] = "This Language file have " + until + "/" + until_max + " Entrys.";
-
-    return info;
-  }
 
 }
-
-

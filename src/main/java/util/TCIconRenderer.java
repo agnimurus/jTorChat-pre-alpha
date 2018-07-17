@@ -52,40 +52,40 @@ public class TCIconRenderer extends DefaultTreeCellRenderer {
     xaImagebase = getImg(Config.getIconDir() + "/xa.png");
 
     awayImage = awayImagebase.getScaledInstance(Config.getImage_size(), Config.getImage_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
     handshakeImage = handshakeImagebase.getScaledInstance(Config.getImage_size(),
-        Config.getImage_size(), java.awt.Image.SCALE_SMOOTH);
+        Config.getImage_size(), Image.SCALE_SMOOTH);
     offlineImage = offlineImagebase
         .getScaledInstance(Config.getImage_size(), Config.getImage_size(),
-            java.awt.Image.SCALE_SMOOTH);
+            Image.SCALE_SMOOTH);
     onlineImage = onlineImagebase.getScaledInstance(Config.getImage_size(), Config.getImage_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
     xaImage = xaImagebase.getScaledInstance(Config.getImage_size(), Config.getImage_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
 
     img = awayIcon.getImage();
     newimg = img.getScaledInstance(Config.getIcon_size(), Config.getIcon_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
     awayIcon = new ImageIcon(newimg);
 
     img = handshakeIcon.getImage();
     newimg = img.getScaledInstance(Config.getIcon_size(), Config.getIcon_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
     handshakeIcon = new ImageIcon(newimg);
 
     img = offlineIcon.getImage();
     newimg = img.getScaledInstance(Config.getIcon_size(), Config.getIcon_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
     offlineIcon = new ImageIcon(newimg);
 
     img = onlineIcon.getImage();
     newimg = img.getScaledInstance(Config.getIcon_size(), Config.getIcon_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
     onlineIcon = new ImageIcon(newimg);
 
     img = xaIcon.getImage();
     newimg = img.getScaledInstance(Config.getIcon_size(), Config.getIcon_size(),
-        java.awt.Image.SCALE_SMOOTH);
+        Image.SCALE_SMOOTH);
     xaIcon = new ImageIcon(newimg);
 
   }
