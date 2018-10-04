@@ -16,7 +16,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import org.graalvm.compiler.api.replacements.Snippet.NonNullParameter;
+import lombok.NonNull;
 import util.LogWriter;
 
 @SuppressWarnings("serial")
@@ -105,15 +105,15 @@ public class GuiLog extends JFrame {
    * @param text
    * @param style
    */
-  public static void append(String text, @NonNullParameter String style) {
+  public static void append(String text, @NonNull String style) {
     synchronized (LOCK) {
       DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) guiLog.logTextPane
           .getDocument();
       try {
         int offset = defaultStyledDocument.getLength();
-        AttributeSet atttributes = defaultStyledDocument.getStyle(style);
+        AttributeSet attributes = defaultStyledDocument.getStyle(style);
 
-        defaultStyledDocument.insertString(offset, text, atttributes);
+        defaultStyledDocument.insertString(offset, text, attributes);
         trimText();
         guiLog.logTextPane.setCaretPosition(defaultStyledDocument.getLength());
       } catch (BadLocationException ble) {
@@ -163,10 +163,10 @@ public class GuiLog extends JFrame {
         int i = guiLog.logTextPane.getText().indexOf("\n");
         try {
           guiLog.logTextPane.getDocument().remove(0, i + 1);
+          // trimText(); // Fixed by moving to try block then commenting out 10-04-2018: FIXME: possible recursive bug causing an infinitely broken call if exception is caught
         } catch (BadLocationException e) {
           e.printStackTrace();
         }
-        trimText(); // FIXME: possible bug causing an infinitely broken call if exception is caught
       }
     }
   }
