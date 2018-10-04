@@ -11,10 +11,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import org.graalvm.compiler.api.replacements.Snippet.NonNullParameter;
 import util.LogWriter;
 
 @SuppressWarnings("serial")
@@ -25,8 +27,38 @@ public class GuiLog extends JFrame {
 
   private static GuiLog guiLog;
 
-  private static Object LOCK = new Object();//Used for thread syncronization
+  private static final Object LOCK = new Object();//Used for thread syncronization
 
+  static {
+    Gui.setLAF("Nimbus");
+    //FIXME determine if this is a bug. I think it is. --> guiLog = new GuiLog();
+//		guiLog.setVisible(true);
+  }
+
+  /**
+   * Menu bar for the GuiLog Window. Contains "Save", "Clear", and "Close" actions.
+   */
+  private JMenuBar jMenuBar;
+  /**
+   * Saves the Log
+   */
+  private JMenuItem saveMenuItem;
+  /**
+   * Clears the log
+   */
+  private JMenuItem clearMenuItem;
+  /**
+   * Closes the Log
+   */
+  private JMenuItem closeMenuItem;
+  /**
+   * Container for logTextPane
+   */
+  private JScrollPane containerScrollPane;
+  /**
+   * Displays the Log in a JTextPane
+   */
+  private JTextPane logTextPane;
 
   public GuiLog() {
     initComponents();
@@ -34,27 +66,6 @@ public class GuiLog extends JFrame {
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     logTextPane.setEditable(false);
     initDocument();
-  }
-
-  private void initDocument() {
-    DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) logTextPane.getDocument();
-
-    Style timestampStyle = defaultStyledDocument.addStyle("Time Stamp", null);
-    StyleConstants.setForeground(timestampStyle, Color.gray.darker());
-    Style theirNameStyle = defaultStyledDocument.addStyle("Err", null);
-    StyleConstants.setForeground(theirNameStyle, Color.red.darker());
-
-    Style classC = defaultStyledDocument.addStyle("Class-c", null);
-    StyleConstants.setForeground(classC, Color.green.darker());
-
-    Style classT = defaultStyledDocument.addStyle("Class-t", null);
-    StyleConstants.setForeground(classT, Color.green.darker().darker().darker());
-  }
-
-  static {
-    Gui.setLAF("Nimbus");
-    //FIXME determine if this is a bug. I think it is. --> guiLog = new GuiLog();
-//		guiLog.setVisible(true);
   }
 
   /**
@@ -94,13 +105,15 @@ public class GuiLog extends JFrame {
    * @param text
    * @param style
    */
-  public static void append(String text, String style) {
+  public static void append(String text, @NonNullParameter String style) {
     synchronized (LOCK) {
       DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) guiLog.logTextPane
           .getDocument();
       try {
-        defaultStyledDocument.insertString(defaultStyledDocument.getLength(), text,
-            style == null ? null : defaultStyledDocument.getStyle(style));
+        int offset = defaultStyledDocument.getLength();
+        AttributeSet atttributes = defaultStyledDocument.getStyle(style);
+
+        defaultStyledDocument.insertString(offset, text, atttributes);
         trimText();
         guiLog.logTextPane.setCaretPosition(defaultStyledDocument.getLength());
       } catch (BadLocationException ble) {
@@ -137,6 +150,12 @@ public class GuiLog extends JFrame {
     }
   }
 
+  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+  // Generated using JFormDesigner Evaluation license - dfddfd dfdfdf
+
+  /**
+   * Trims the text shown in {@code logTextPane}
+   */
   private static void trimText() {
     if (Config.getFulllog() == 0) {
       if (guiLog.logTextPane.getDocument().getLength() > 10000) {
@@ -147,11 +166,25 @@ public class GuiLog extends JFrame {
         } catch (BadLocationException e) {
           e.printStackTrace();
         }
-        trimText();
+        trimText(); // FIXME: possible bug causing an infinitely broken call if exception is caught
       }
     }
   }
 
+  private void initDocument() {
+    DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) logTextPane.getDocument();
+
+    Style timestampStyle = defaultStyledDocument.addStyle("Time Stamp", null);
+    StyleConstants.setForeground(timestampStyle, Color.gray.darker());
+    Style theirNameStyle = defaultStyledDocument.addStyle("Err", null);
+    StyleConstants.setForeground(theirNameStyle, Color.red.darker());
+
+    Style classC = defaultStyledDocument.addStyle("Class-c", null);
+    StyleConstants.setForeground(classC, Color.green.darker());
+
+    Style classT = defaultStyledDocument.addStyle("Class-t", null);
+    StyleConstants.setForeground(classT, Color.green.darker().darker().darker());
+  }
 
   private void save(ActionEvent actionEvent) {
     LogWriter.LogWrite(guiLog.logTextPane.getText(), 0, "");
@@ -167,7 +200,6 @@ public class GuiLog extends JFrame {
   private void close(ActionEvent actionEvent) {
     guiLog.setVisible(false);
   }
-
 
   private void initComponents() {
     // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -217,39 +249,6 @@ public class GuiLog extends JFrame {
     setLocationRelativeTo(getOwner());
     // JFormDesigner - End of component initialization  //GEN-END:initComponents
   }
-
-  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-  // Generated using JFormDesigner Evaluation license - dfddfd dfdfdf
-
-  /**
-   * Menu bar for the GuiLog Window. Contains "Save", "Clear", and "Close" actions.
-   */
-  private JMenuBar jMenuBar;
-
-  /**
-   * Saves the Log
-   */
-  private JMenuItem saveMenuItem;
-
-  /**
-   * Clears the log
-   */
-  private JMenuItem clearMenuItem;
-
-  /**
-   * Closes the Log
-   */
-  private JMenuItem closeMenuItem;
-
-  /**
-   * Container for logTextPane
-   */
-  private JScrollPane containerScrollPane;
-
-  /**
-   * Displays the Log in a JTextPane
-   */
-  private JTextPane logTextPane;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 
 

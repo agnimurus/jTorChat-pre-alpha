@@ -47,8 +47,8 @@ import util.Tray;
 
 public class Gui {
 
-  private Listener listener;
   public static JFrame f;
+  public static Gui instance;
   private static DefaultMutableTreeNode root;
   private static DefaultMutableTreeNode buddyNodeholy;
   private static DefaultMutableTreeNode buddyNodeon;
@@ -57,10 +57,179 @@ public class Gui {
   private static HashMap<String, MutableTreeNode> nodeMap = new HashMap<String, MutableTreeNode>();
   private static HashMap<String, GuiChatWindow> windowMap = new HashMap<String, GuiChatWindow>();
   private static JTree jt;
-  private GuiAlert alert;
-  public static Gui instance;
   public HashMap<String, GuiListener> cmdListeners = new HashMap<String, GuiListener>();
   public int extraSpace;
+  private Listener listener;
+  private GuiAlert alert;
+
+  /**
+   * Sets the look and feel of the JFrame
+   * @param string
+   */
+  public static void setLAF(String string) {
+    try {
+      LookAndFeelInfo[] lookAndFeelInfos = UIManager.getInstalledLookAndFeels();
+      boolean validInfo = false;
+      LookAndFeelInfo info;
+
+      for (int index = 0; index < lookAndFeelInfos.length && !validInfo; index++) {
+        info = lookAndFeelInfos[index];
+        if (string.equals(info.getName())) {
+          UIManager.setLookAndFeel(info.getClassName());
+          validInfo = true;
+        }
+      }
+
+    } catch (UnsupportedLookAndFeelException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static Gui getInstance() {
+    return instance;
+  }
+
+  public static GuiChatWindow getChatWindow(Buddy b, boolean createIfNotExist, boolean setVis) {
+    GuiChatWindow w = windowMap.get(b.getAddress());
+    if (w == null && !createIfNotExist) {
+      return null;
+    }
+    if (w == null) {
+      w = new GuiChatWindow(b);
+      windowMap.put(b.getAddress(), w);
+    }
+    w.setTitle(b.toString(true));
+
+    w.setFocusableWindowState(false);
+    if (setVis) {
+      w.setVisible(true);
+    }
+
+    w.setFocusableWindowState(true);
+    return w;
+  }
+
+  public static void blacklist(Buddy buddy) {
+
+    MutableTreeNode node = nodeMap.remove(buddy.getAddress());
+    if (node != null) // remove entry in the gui
+    {
+      ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
+    }
+
+    node = nodeMap.get(buddy.getAddress());
+    if (node != null) {
+      node.removeFromParent();
+    }
+    nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
+
+    if (buddy.getAddress().equals(Config.getUs())) {
+      ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeblack, 0);
+    } else {
+      ((DefaultTreeModel) jt.getModel())
+          .insertNodeInto(node, buddyNodeblack, buddyNodeblack.getChildCount());
+    }
+
+    if (buddyNodeblack.getChildCount() == 1) {
+      jt.expandRow(0);
+    }
+
+  }
+
+  public static void holylist(Buddy buddy) {
+    if (buddy.isFullyConnected()) {
+      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
+      if (node != null) // remove entry in the gui
+      {
+        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
+      }
+
+      node = nodeMap.get(buddy.getAddress());
+      if (node != null) {
+        node.removeFromParent();
+      }
+      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
+
+      if (buddy.getAddress().equals(Config.getUs())) {
+        ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
+      } else {
+        ((DefaultTreeModel) jt.getModel())
+            .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
+      }
+
+      if (buddyNodeholy.getChildCount() == 1) {
+        jt.expandRow(0);
+      }
+    }
+
+  }
+
+  public static void pardon(Buddy buddy) {
+
+    if (buddy.getStatus() >= Status.ONLINE) {
+
+      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
+      if (node != null) // remove entry in the gui
+      {
+        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
+      }
+
+      node = nodeMap.get(buddy.getAddress());
+      if (node != null) {
+        node.removeFromParent();
+      }
+      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
+
+      if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
+        if (buddy.getAddress().equals(Config.getUs())) {
+          ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
+        } else {
+          ((DefaultTreeModel) jt.getModel())
+              .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
+        }
+        if (buddyNodeholy.getChildCount() == 1) {
+          jt.expandRow(0);
+        }
+      } else {
+        if (buddy.getAddress().equals(Config.getUs())) {
+          ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, 0);
+        } else {
+          ((DefaultTreeModel) jt.getModel())
+              .insertNodeInto(node, buddyNodeon, buddyNodeon.getChildCount());
+        }
+        if (buddyNodeon.getChildCount() == 1) {
+          jt.expandRow(0);
+        }
+      }
+
+    } else {
+
+      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
+      if (node != null) // remove entry in the gui
+      {
+        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
+      }
+
+      node = nodeMap.get(buddy.getAddress());
+      if (node != null) {
+        node.removeFromParent();
+      }
+      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
+
+      if (buddy.getAddress().equals(Config.getUs())) {
+        ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
+      } else {
+        ((DefaultTreeModel) jt.getModel())
+            .insertNodeInto(node, buddyNode, buddyNode.getChildCount());
+      }
+
+      if (buddyNode.getChildCount() == 1) {
+        jt.expandRow(0);
+      }
+
+    }
+
+  }
 
   public void init() {
     int w = 268, h = -1;
@@ -297,34 +466,13 @@ public class Gui {
     f.setVisible(true);
   }
 
-
-  public void setVisible(boolean b) {
-    f.setVisible(b);
-  }
-
   public boolean isVisible() {
     return f.isVisible();
   }
 
-  public static void setLAF(String string) {
-    try {
-      LookAndFeelInfo[] lookAndFeelInfos = UIManager.getInstalledLookAndFeels();
-      boolean validInfo = false;
-      LookAndFeelInfo info;
-
-      for (int index = 0; index < lookAndFeelInfos.length && !validInfo; index++) {
-        info = lookAndFeelInfos[index];
-        if (string.equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          validInfo = true;
-        }
-      }
-
-    } catch (UnsupportedLookAndFeelException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-      e.printStackTrace();
-    }
+  public void setVisible(boolean b) {
+    f.setVisible(b);
   }
-
 
   private JMenuItem getNewMenuItem(String s, ActionListener al) {
     JMenuItem menuItem = new JMenuItem(s);
@@ -427,10 +575,6 @@ public class Gui {
     popup.show(tree, x, y);
   }
 
-  public static Gui getInstance() {
-    return instance;
-  }
-
   private void doAction(TreePath x) {
     DefaultMutableTreeNode o = (DefaultMutableTreeNode) x.getLastPathComponent();
     if (o.getUserObject() instanceof Buddy) {
@@ -445,146 +589,8 @@ public class Gui {
     }
   }
 
-  public static GuiChatWindow getChatWindow(Buddy b, boolean createIfNotExist, boolean setVis) {
-    GuiChatWindow w = windowMap.get(b.getAddress());
-    if (w == null && !createIfNotExist) {
-      return null;
-    }
-    if (w == null) {
-      w = new GuiChatWindow(b);
-      windowMap.put(b.getAddress(), w);
-    }
-    w.setTitle(b.toString(true));
-
-    w.setFocusableWindowState(false);
-    if (setVis) {
-      w.setVisible(true);
-    }
-
-    w.setFocusableWindowState(true);
-    return w;
-  }
-
-  public static void blacklist(Buddy buddy) {
-
-    MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-    if (node != null) // remove entry in the gui
-    {
-      ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-    }
-
-    node = nodeMap.get(buddy.getAddress());
-    if (node != null) {
-      node.removeFromParent();
-    }
-    nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-    if (buddy.getAddress().equals(Config.getUs())) {
-      ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeblack, 0);
-    } else {
-      ((DefaultTreeModel) jt.getModel())
-          .insertNodeInto(node, buddyNodeblack, buddyNodeblack.getChildCount());
-    }
-
-    if (buddyNodeblack.getChildCount() == 1) {
-      jt.expandRow(0);
-    }
-
-  }
-
-  public static void holylist(Buddy buddy) {
-    if (buddy.isFullyConnected()) {
-      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-      if (node != null) // remove entry in the gui
-      {
-        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-      }
-
-      node = nodeMap.get(buddy.getAddress());
-      if (node != null) {
-        node.removeFromParent();
-      }
-      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-      if (buddy.getAddress().equals(Config.getUs())) {
-        ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
-      } else {
-        ((DefaultTreeModel) jt.getModel())
-            .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
-      }
-
-      if (buddyNodeholy.getChildCount() == 1) {
-        jt.expandRow(0);
-      }
-    }
-
-  }
-
-  public static void pardon(Buddy buddy) {
-
-    if (buddy.getStatus() >= Status.ONLINE) {
-
-      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-      if (node != null) // remove entry in the gui
-      {
-        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-      }
-
-      node = nodeMap.get(buddy.getAddress());
-      if (node != null) {
-        node.removeFromParent();
-      }
-      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-      if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
-        if (buddy.getAddress().equals(Config.getUs())) {
-          ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
-        } else {
-          ((DefaultTreeModel) jt.getModel())
-              .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
-        }
-        if (buddyNodeholy.getChildCount() == 1) {
-          jt.expandRow(0);
-        }
-      } else {
-        if (buddy.getAddress().equals(Config.getUs())) {
-          ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, 0);
-        } else {
-          ((DefaultTreeModel) jt.getModel())
-              .insertNodeInto(node, buddyNodeon, buddyNodeon.getChildCount());
-        }
-        if (buddyNodeon.getChildCount() == 1) {
-          jt.expandRow(0);
-        }
-      }
-
-    } else {
-
-      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-      if (node != null) // remove entry in the gui
-      {
-        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-      }
-
-      node = nodeMap.get(buddy.getAddress());
-      if (node != null) {
-        node.removeFromParent();
-      }
-      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-      if (buddy.getAddress().equals(Config.getUs())) {
-        ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
-      } else {
-        ((DefaultTreeModel) jt.getModel())
-            .insertNodeInto(node, buddyNode, buddyNode.getChildCount());
-      }
-
-      if (buddyNode.getChildCount() == 1) {
-        jt.expandRow(0);
-      }
-
-    }
-
+  public JMenu getFileMenu() {
+    return f.getJMenuBar().getMenu(0);
   }
 
   private class Listener implements APIListener {
@@ -794,10 +800,6 @@ public class Gui {
         jt.expandRow(0);
       }
     }
-  }
-
-  public JMenu getFileMenu() {
-    return f.getJMenuBar().getMenu(0);
   }
 
 }

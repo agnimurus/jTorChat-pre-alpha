@@ -12,7 +12,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import util.Status;
 
-
+/**
+ * {@code TCPort} is the application entry point
+ */
 public class TCPort {
 
   // Direct compile and run from source for fixing the path
