@@ -101,7 +101,7 @@ public class GuiLog extends JFrame {
   }
 
   /**
-   *
+   * Append {@code text} to the {@code logTextPane} using {@code style}.
    * @param text
    * @param style
    */
@@ -115,7 +115,7 @@ public class GuiLog extends JFrame {
 
         defaultStyledDocument.insertString(offset, text, attributes);
         trimText();
-        guiLog.logTextPane.setCaretPosition(defaultStyledDocument.getLength());
+        guiLog.logTextPane.setCaretPosition(defaultStyledDocument.getLength()); // TODO: Determine if this is necessary
       } catch (BadLocationException ble) {
         ble.printStackTrace();
       }
@@ -129,6 +129,7 @@ public class GuiLog extends JFrame {
       try {
         defaultStyledDocument.insertString(defaultStyledDocument.getLength(), errorString,
             defaultStyledDocument.getStyle("Err"));
+        // TODO: Use enum instead of hard-coded string
         trimText();
         guiLog.logTextPane.setCaretPosition(defaultStyledDocument.getLength());
       } catch (BadLocationException ble) {
