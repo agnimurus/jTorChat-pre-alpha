@@ -4,7 +4,6 @@ import core.Config;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -16,13 +15,13 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import lombok.NonNull;
+import jdk.internal.jline.internal.Nullable;
 import util.LogWriter;
 
 @SuppressWarnings("serial")
 public class GuiLog extends JFrame {
 
-  public static long lastclear = System.currentTimeMillis() / 1000;
+  // public static long lastclear = System.currentTimeMillis() / 1000;
 
 
   private static GuiLog guiLog;
@@ -38,7 +37,7 @@ public class GuiLog extends JFrame {
   /**
    * Menu bar for the GuiLog Window. Contains "Save", "Clear", and "Close" actions.
    */
-  private JMenuBar jMenuBar;
+  private JMenuBar logActionsMenuBar;
   /**
    * Saves the Log
    */
@@ -102,10 +101,10 @@ public class GuiLog extends JFrame {
 
   /**
    * Append {@code text} to the {@code logTextPane} using {@code style}.
-   * @param text
-   * @param style
+   * {@code style} is the string representation of the format passed to the logTextPane's default-styled document
+   *    (  {@code document.getStyle(style)}  )
    */
-  public static void append(String text, @NonNull String style) {
+  public static void append(String text, @Nullable String style) {
     synchronized (LOCK) {
       DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) guiLog.logTextPane
           .getDocument();
@@ -115,49 +114,37 @@ public class GuiLog extends JFrame {
 
         defaultStyledDocument.insertString(offset, text, attributes);
         trimText();
-        guiLog.logTextPane.setCaretPosition(defaultStyledDocument.getLength()); // TODO: Determine if this is necessary
+        guiLog.logTextPane.setCaretPosition(
+            defaultStyledDocument.getLength()); // TODO: Determine if this is necessary
       } catch (BadLocationException ble) {
         ble.printStackTrace();
       }
     }
+  }
+
+  /**
+   * Append {@code text} to the {@code logTextPane} without a special style.
+   * @param text
+   */
+  public static void append(String text) {
+    append(text, null); // Append text without a style
   }
 
   public static void updateErr(String errorString) {
-    synchronized (LOCK) {
-      DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) guiLog.logTextPane
-          .getDocument();
-      try {
-        defaultStyledDocument.insertString(defaultStyledDocument.getLength(), errorString,
-            defaultStyledDocument.getStyle("Err"));
-        // TODO: Use enum instead of hard-coded string
-        trimText();
-        guiLog.logTextPane.setCaretPosition(defaultStyledDocument.getLength());
-      } catch (BadLocationException ble) {
-        ble.printStackTrace();
-      }
-    }
+    String style = "Err"; // To maintain easy readability
+    append(errorString, style);
   }
 
-  public static void updateOut(String s) {
-    synchronized (LOCK) {
-      DefaultStyledDocument d = (DefaultStyledDocument) guiLog.logTextPane.getDocument();
-      try {
-        d.insertString(d.getLength(), s, null);
-        trimText();
-        guiLog.logTextPane.setCaretPosition(d.getLength());
-      } catch (BadLocationException ble) {
-        ble.printStackTrace();
-      }
-    }
+  public static void updateOut(String update) {
+    append(update);
   }
-
-  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-  // Generated using JFormDesigner Evaluation license - dfddfd dfdfdf
 
   /**
    * Trims the text shown in {@code logTextPane}
    */
   private static void trimText() {
+    // TODO: replace hard coded values with values from a config
+
     if (Config.getFulllog() == 0) {
       if (guiLog.logTextPane.getDocument().getLength() > 10000) {
         guiLog.logTextPane.setCaretPosition(0);
@@ -170,7 +157,7 @@ public class GuiLog extends JFrame {
         }
       }
     }
-  }
+  } // See TODO
 
   private void initDocument() {
     DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) logTextPane.getDocument();
@@ -187,25 +174,27 @@ public class GuiLog extends JFrame {
     StyleConstants.setForeground(classT, Color.green.darker().darker().darker());
   }
 
-  private void save(ActionEvent actionEvent) {
-    LogWriter.LogWrite(guiLog.logTextPane.getText(), 0, "");
+  private void save() {
+    LogWriter.logWrite(guiLog.logTextPane.getText());
   }
 
-  private void clear(ActionEvent actionEvent) {
+  private void clear() {
     guiLog.logTextPane.setCaretPosition(0);
     guiLog.logTextPane.setDocument(new DefaultStyledDocument());
     initDocument();
     System.gc(); // ask the jvm to collect garbage
   }
 
-  private void close(ActionEvent actionEvent) {
+  private void close() {
     guiLog.setVisible(false);
   }
 
   private void initComponents() {
+    // TODO: replace hard coded values with config
+
     // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
     // Generated using JFormDesigner Evaluation license - dfddfd dfdfdf
-    jMenuBar = new JMenuBar();
+    logActionsMenuBar = new JMenuBar();
     saveMenuItem = new JMenuItem();
     clearMenuItem = new JMenuItem();
     closeMenuItem = new JMenuItem();
@@ -216,31 +205,31 @@ public class GuiLog extends JFrame {
     Container contentPane = getContentPane();
     contentPane.setLayout(new BorderLayout(8, 8));
 
-    //======== jMenuBar ========
+    //======== logActionsMenuBar ========
     {
 
       //---- saveMenuItem ----
       saveMenuItem.setText("Save");
       saveMenuItem.setHorizontalTextPosition(SwingConstants.CENTER);
       saveMenuItem.setHorizontalAlignment(SwingConstants.CENTER);
-      saveMenuItem.addActionListener(actionEvent -> save(actionEvent));
-      jMenuBar.add(saveMenuItem);
+      saveMenuItem.addActionListener(actionEvent -> save());
+      logActionsMenuBar.add(saveMenuItem);
 
       //---- clearMenuItem ----
       clearMenuItem.setText("Clear");
       clearMenuItem.setHorizontalTextPosition(SwingConstants.CENTER);
       clearMenuItem.setHorizontalAlignment(SwingConstants.CENTER);
-      clearMenuItem.addActionListener(actionEvent -> clear(actionEvent));
-      jMenuBar.add(clearMenuItem);
+      clearMenuItem.addActionListener(actionEvent -> clear());
+      logActionsMenuBar.add(clearMenuItem);
 
       //---- closeMenuItem ----
       closeMenuItem.setText("Close");
       closeMenuItem.setHorizontalTextPosition(SwingConstants.CENTER);
       closeMenuItem.setHorizontalAlignment(SwingConstants.CENTER);
-      closeMenuItem.addActionListener(actionEvent -> close(actionEvent));
-      jMenuBar.add(closeMenuItem);
+      closeMenuItem.addActionListener(actionEvent -> close());
+      logActionsMenuBar.add(closeMenuItem);
     }
-    setJMenuBar(jMenuBar);
+    setJMenuBar(logActionsMenuBar);
 
     //======== containerScrollPane ========
     containerScrollPane.setViewportView(logTextPane);

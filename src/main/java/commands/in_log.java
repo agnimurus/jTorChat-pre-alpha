@@ -15,7 +15,7 @@ public class in_log {
     if (buddyName == null || buddyName.equals("")) {
       buddyName = buddy.getAddress();
     }
-    filename = LogWriter.LogWrite(window.get_textPane1().getText(), 1, buddyName);
+    filename = LogWriter.logWrite(window.get_textPane1().getText(), 1, buddyName);
     ChatWindow.update_window(MessageType.PRIVATE, window,
         "This Chat log here " + filename + " in the Log Folder.", "", "", false);
   }
