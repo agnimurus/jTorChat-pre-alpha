@@ -21,7 +21,7 @@ public class LogWriter {
    * @param filePrefix
    * @return
    */
-  private static String logWrite(String what, @NonNull String filePrefix) {
+  public static String logWrite(String what, @NonNull String filePrefix) {
     // File anlegen
     FileWriter writer;
     File file;

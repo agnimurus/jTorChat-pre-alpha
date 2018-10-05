@@ -15,7 +15,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import jdk.internal.jline.internal.Nullable;
+import lombok.NonNull;
 import util.LogWriter;
 
 @SuppressWarnings("serial")
@@ -104,7 +104,7 @@ public class GuiLog extends JFrame {
    * {@code style} is the string representation of the format passed to the logTextPane's default-styled document
    *    (  {@code document.getStyle(style)}  )
    */
-  public static void append(String text, @Nullable String style) {
+  public static void append(String text, @NonNull String style) {
     synchronized (LOCK) {
       DefaultStyledDocument defaultStyledDocument = (DefaultStyledDocument) guiLog.logTextPane
           .getDocument();
