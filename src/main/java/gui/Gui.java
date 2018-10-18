@@ -39,6 +39,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import listeners.APIListener;
+import lombok.NonNull;
 import util.ChatWindow;
 import util.MessageType;
 import util.Status;
@@ -53,10 +54,10 @@ public class Gui {
   private static DefaultMutableTreeNode buddyNodeholy;
   private static DefaultMutableTreeNode buddyNodeon;
   private static DefaultMutableTreeNode buddyNode;
-  private static DefaultMutableTreeNode buddyNodeblack;
+  private static DefaultMutableTreeNode buddyBlacklist;
   private static HashMap<String, MutableTreeNode> nodeMap = new HashMap<String, MutableTreeNode>();
   private static HashMap<String, GuiChatWindow> windowMap = new HashMap<String, GuiChatWindow>();
-  private static JTree jt;
+  private static JTree jTree;
   public HashMap<String, GuiListener> cmdListeners = new HashMap<String, GuiListener>();
   public int extraSpace;
   private Listener listener;
@@ -111,121 +112,65 @@ public class Gui {
 
   public static void blacklist(Buddy buddy) {
 
-    MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-    if (node != null) // remove entry in the gui
-    {
-      ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
+    addToList(buddy, buddyBlacklist);
+
+  }
+
+  public static void holylist(Buddy buddy) {
+    if (buddy.isFullyConnected()) {
+      addToList(buddy, buddyNodeholy);
     }
 
-    node = nodeMap.get(buddy.getAddress());
+  }
+
+  /**
+   * Takes a Buddy and adds it to a list indicated by {@code buddyNode} (blacklist, holylist, etc.)
+   * @param buddy
+   * @param mutableTreeNode
+   */
+  private static void addToList(@NonNull Buddy buddy, @NonNull DefaultMutableTreeNode mutableTreeNode) {
+    //TODO: make method name more descriptive
+    //FIXME: This methods assumes that many static references are non-null
+    MutableTreeNode node = nodeMap.remove(buddy.getAddress());
+    DefaultTreeModel jTreeModel = (DefaultTreeModel) jTree.getModel(); // assumes jTree is nonnull
+
+    if (node != null) {
+      // If node existed in known buddy addresses, remove entry in the gui.
+      // At this point, node will be null if was not found in nodeMap
+      jTreeModel.removeNodeFromParent(node);
+    }
+
+
+    node = nodeMap.get(buddy.getAddress()); // This makes no sense!!! Didn't we just remove it?
     if (node != null) {
       node.removeFromParent();
     }
     nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
     if (buddy.getAddress().equals(Config.getUs())) {
-      ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeblack, 0);
+      jTreeModel.insertNodeInto(node, mutableTreeNode, 0);
     } else {
-      ((DefaultTreeModel) jt.getModel())
-          .insertNodeInto(node, buddyNodeblack, buddyNodeblack.getChildCount());
+      jTreeModel.insertNodeInto(node, mutableTreeNode, mutableTreeNode.getChildCount());
     }
 
-    if (buddyNodeblack.getChildCount() == 1) {
-      jt.expandRow(0);
+    if (mutableTreeNode.getChildCount() == 1) {
+      jTree.expandRow(0);
     }
-
   }
 
-  public static void holylist(Buddy buddy) {
-    if (buddy.isFullyConnected()) {
-      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-      if (node != null) // remove entry in the gui
-      {
-        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-      }
-
-      node = nodeMap.get(buddy.getAddress());
-      if (node != null) {
-        node.removeFromParent();
-      }
-      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-      if (buddy.getAddress().equals(Config.getUs())) {
-        ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
-      } else {
-        ((DefaultTreeModel) jt.getModel())
-            .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
-      }
-
-      if (buddyNodeholy.getChildCount() == 1) {
-        jt.expandRow(0);
-      }
-    }
-
-  }
-
-  public static void pardon(Buddy buddy) {
+  public static void pardon(@NonNull Buddy buddy) {
 
     if (buddy.getStatus() >= Status.ONLINE) {
 
-      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-      if (node != null) // remove entry in the gui
-      {
-        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-      }
-
-      node = nodeMap.get(buddy.getAddress());
-      if (node != null) {
-        node.removeFromParent();
-      }
-      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-      if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
-        if (buddy.getAddress().equals(Config.getUs())) {
-          ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
-        } else {
-          ((DefaultTreeModel) jt.getModel())
-              .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
-        }
-        if (buddyNodeholy.getChildCount() == 1) {
-          jt.expandRow(0);
-        }
+      if (Buddy.isInHolyList(buddy.getAddress())) {
+        addToList(buddy, buddyNodeholy);
       } else {
-        if (buddy.getAddress().equals(Config.getUs())) {
-          ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, 0);
-        } else {
-          ((DefaultTreeModel) jt.getModel())
-              .insertNodeInto(node, buddyNodeon, buddyNodeon.getChildCount());
-        }
-        if (buddyNodeon.getChildCount() == 1) {
-          jt.expandRow(0);
-        }
+        addToList(buddy, buddyNodeon);
       }
 
     } else {
 
-      MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-      if (node != null) // remove entry in the gui
-      {
-        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-      }
-
-      node = nodeMap.get(buddy.getAddress());
-      if (node != null) {
-        node.removeFromParent();
-      }
-      nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-      if (buddy.getAddress().equals(Config.getUs())) {
-        ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
-      } else {
-        ((DefaultTreeModel) jt.getModel())
-            .insertNodeInto(node, buddyNode, buddyNode.getChildCount());
-      }
-
-      if (buddyNode.getChildCount() == 1) {
-        jt.expandRow(0);
-      }
+      addToList(buddy, buddyNode);
 
     }
 
@@ -396,28 +341,28 @@ public class Gui {
 
     JScrollPane jsp = new JScrollPane();
     jsp.setHorizontalScrollBar(null); // no horizontal scrollbar
-    jt = new JTree();
-    jsp.getViewport().add(jt);
+    jTree = new JTree();
+    jsp.getViewport().add(jTree);
     f.getContentPane().add(jsp, BorderLayout.CENTER);
 
     root = new DefaultMutableTreeNode("[root]");
     buddyNodeholy = new DefaultMutableTreeNode(Language.langtext[40]);
     buddyNodeon = new DefaultMutableTreeNode(Language.langtext[7]);
     buddyNode = new DefaultMutableTreeNode(Language.langtext[8]);
-    buddyNodeblack = new DefaultMutableTreeNode(Language.langtext[39]);
+    buddyBlacklist = new DefaultMutableTreeNode(Language.langtext[39]);
     root.add(buddyNodeholy);
     root.add(buddyNodeon);
     root.add(buddyNode);
-    root.add(buddyNodeblack);
-    jt.setModel(new DefaultTreeModel(root));
-    jt.setLargeModel(true);
-    jt.setRootVisible(false);
-    jt.setCellRenderer(new TCIconRenderer(jt));
+    root.add(buddyBlacklist);
+    jTree.setModel(new DefaultTreeModel(root));
+    jTree.setLargeModel(true);
+    jTree.setRootVisible(false);
+    jTree.setCellRenderer(new TCIconRenderer(jTree));
 
-    jt.setRowHeight(Config.getIcon_size() + Config.getIcon_space());
-    ToolTipManager.sharedInstance().registerComponent(jt);
+    jTree.setRowHeight(Config.getIcon_size() + Config.getIcon_space());
+    ToolTipManager.sharedInstance().registerComponent(jTree);
 
-    jt.addMouseListener(new MouseListener() {
+    jTree.addMouseListener(new MouseListener() {
 
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -425,8 +370,8 @@ public class Gui {
 
       @Override
       public void mousePressed(MouseEvent e) {
-        int selRow = jt.getRowForLocation(e.getX(), e.getY());
-        TreePath selPath = jt.getPathForLocation(e.getX(), e.getY());
+        int selRow = jTree.getRowForLocation(e.getX(), e.getY());
+        TreePath selPath = jTree.getPathForLocation(e.getX(), e.getY());
         if (selRow != -1) {
           if (e.getClickCount() == 2 && !e.isPopupTrigger()) {
             doAction(selPath);
@@ -501,7 +446,7 @@ public class Gui {
         @Override
         public void actionPerformed(ActionEvent e) {
           // String ac = e.getActionCommand();
-          // TreePath path = jt.getPathForLocation(x, y);
+          // TreePath path = jTree.getPathForLocation(x, y);
           openChatWindow((Buddy) o);
         }
       }));
@@ -597,7 +542,7 @@ public class Gui {
 
     @Override
     public void onStatusChange(Buddy buddy, byte newStatus, byte oldStatus) {
-      jt.repaint();
+      jTree.repaint();
       Logger.oldOut.println(
           buddy + " changed from " + Buddy.getStatusName(oldStatus) + " to " + Buddy
               .getStatusName(newStatus));
@@ -632,7 +577,7 @@ public class Gui {
           MutableTreeNode node = nodeMap.remove(buddy.getAddress());
           if (node != null) // remove entry in the gui
           {
-            ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
+            ((DefaultTreeModel) jTree.getModel()).removeNodeFromParent(node);
           }
 
           node = nodeMap.get(buddy.getAddress());
@@ -643,25 +588,25 @@ public class Gui {
 
           if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
             if (buddy.getAddress().equals(Config.getUs())) {
-              ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeholy, 0);
+              ((DefaultTreeModel) jTree.getModel()).insertNodeInto(node, buddyNodeholy, 0);
             } else {
-              ((DefaultTreeModel) jt.getModel())
+              ((DefaultTreeModel) jTree.getModel())
                   .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
             }
 
             if (buddyNodeholy.getChildCount() == 1) {
-              jt.expandRow(0);
+              jTree.expandRow(0);
             }
           } else {
             if (buddy.getAddress().equals(Config.getUs())) {
-              ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNodeon, 0);
+              ((DefaultTreeModel) jTree.getModel()).insertNodeInto(node, buddyNodeon, 0);
             } else {
-              ((DefaultTreeModel) jt.getModel())
+              ((DefaultTreeModel) jTree.getModel())
                   .insertNodeInto(node, buddyNodeon, buddyNodeon.getChildCount());
             }
 
             if (buddyNodeon.getChildCount() == 1) {
-              jt.expandRow(0);
+              jTree.expandRow(0);
             }
           }
 
@@ -696,28 +641,7 @@ public class Gui {
         }
 
         if (!BuddyList.black.containsKey(buddy.getAddress())) {
-          MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-          if (node != null) // remove entry in the gui
-          {
-            ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
-          }
-
-          node = nodeMap.get(buddy.getAddress());
-          if (node != null) {
-            node.removeFromParent();
-          }
-          nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-          if (buddy.getAddress().equals(Config.getUs())) {
-            ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
-          } else {
-            ((DefaultTreeModel) jt.getModel())
-                .insertNodeInto(node, buddyNode, buddyNode.getChildCount());
-          }
-
-          if (buddyNode.getChildCount() == 1) {
-            jt.expandRow(0);
-          }
+          addToList(buddy, buddyNode);
         }
       }
 
@@ -725,9 +649,9 @@ public class Gui {
 
     @Override
     public void onProfileNameChange(Buddy buddy, String newName, String oldName) {
-      jt.repaint();
-      jt.setCellRenderer(null); // this is stupid, but it works
-      jt.setCellRenderer(new TCIconRenderer(jt));
+      jTree.repaint();
+      jTree.setCellRenderer(null); // this is stupid, but it works
+      jTree.setCellRenderer(new TCIconRenderer(jTree));
     }
 
     @Override
@@ -737,7 +661,7 @@ public class Gui {
 
     @Override
     public void onAddMe(Buddy buddy) {
-      jt.repaint();
+      jTree.repaint();
     }
 
     @Override
@@ -774,7 +698,7 @@ public class Gui {
       MutableTreeNode node = nodeMap.remove(buddy.getAddress());
       if (node != null) // remove entry in the gui
       {
-        ((DefaultTreeModel) jt.getModel()).removeNodeFromParent(node);
+        ((DefaultTreeModel) jTree.getModel()).removeNodeFromParent(node);
       }
       if (getChatWindow(buddy, false, false) != null) {
         windowMap.remove(buddy.getAddress()).dispose();
@@ -790,14 +714,14 @@ public class Gui {
       nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
 
       if (buddy.getAddress().equals(Config.getUs())) {
-        ((DefaultTreeModel) jt.getModel()).insertNodeInto(node, buddyNode, 0);
+        ((DefaultTreeModel) jTree.getModel()).insertNodeInto(node, buddyNode, 0);
       } else {
-        ((DefaultTreeModel) jt.getModel())
+        ((DefaultTreeModel) jTree.getModel())
             .insertNodeInto(node, buddyNode, buddyNode.getChildCount());
       }
 
       if (buddyNode.getChildCount() == 1) {
-        jt.expandRow(0);
+        jTree.expandRow(0);
       }
     }
   }
