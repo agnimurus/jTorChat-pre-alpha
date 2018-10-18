@@ -50,14 +50,26 @@ public class Gui {
 
   public static JFrame f;
   public static Gui instance;
+
+  /* Buddy Tree Nodes */
+
   private static DefaultMutableTreeNode root;
-  private static DefaultMutableTreeNode buddyNodeholy;
+  private static DefaultMutableTreeNode buddyNodeholy; // Is this the whitelist?
   private static DefaultMutableTreeNode buddyNodeon;
   private static DefaultMutableTreeNode buddyNode;
   private static DefaultMutableTreeNode buddyBlacklist;
-  private static HashMap<String, MutableTreeNode> nodeMap = new HashMap<String, MutableTreeNode>();
-  private static HashMap<String, GuiChatWindow> windowMap = new HashMap<String, GuiChatWindow>();
-  private static JTree jTree;
+
+
+  /* Maps Buddy Addresses (as strings) to Tree Nodes */
+  private static HashMap<String, MutableTreeNode> nodeMap = new HashMap<>();
+
+  private static HashMap<String, GuiChatWindow> windowMap;
+
+  static {
+    windowMap = new HashMap<>();
+  }
+
+  private static JTree jTree; // Visual representation of the Buddy Tree Nodes
   public HashMap<String, GuiListener> cmdListeners = new HashMap<String, GuiListener>();
   public int extraSpace;
   private Listener listener;
@@ -126,11 +138,12 @@ public class Gui {
   /**
    * Takes a Buddy and adds it to a list indicated by {@code buddyNode} (blacklist, holylist, etc.)
    * @param buddy
-   * @param mutableTreeNode
+   * @param buddyTreeNode
    */
-  private static void addToList(@NonNull Buddy buddy, @NonNull DefaultMutableTreeNode mutableTreeNode) {
+  private static void addToList(@NonNull Buddy buddy, @NonNull DefaultMutableTreeNode buddyTreeNode) {
     //TODO: make method name more descriptive
     //FIXME: This methods assumes that many static references are non-null
+
     MutableTreeNode node = nodeMap.remove(buddy.getAddress());
     DefaultTreeModel jTreeModel = (DefaultTreeModel) jTree.getModel(); // assumes jTree is nonnull
 
@@ -140,21 +153,29 @@ public class Gui {
       jTreeModel.removeNodeFromParent(node);
     }
 
+    /*
+
+    The following is commented out because if node existed in the buddyAddress nodeMap, it would be removed (unless some evil multi-threading stuff is happening).
+    Thus, it's basically redundant.
 
     node = nodeMap.get(buddy.getAddress()); // This makes no sense!!! Didn't we just remove it?
     if (node != null) {
       node.removeFromParent();
     }
-    nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
+
+    */
+
+    node = new DefaultMutableTreeNode(buddy);
+    nodeMap.put(buddy.getAddress(), node);
 
     if (buddy.getAddress().equals(Config.getUs())) {
-      jTreeModel.insertNodeInto(node, mutableTreeNode, 0);
+      jTreeModel.insertNodeInto(node, buddyTreeNode, 0); // Make us the first child
     } else {
-      jTreeModel.insertNodeInto(node, mutableTreeNode, mutableTreeNode.getChildCount());
+      jTreeModel.insertNodeInto(node, buddyTreeNode, buddyTreeNode.getChildCount()); // Append (as last child) to node children
     }
 
-    if (mutableTreeNode.getChildCount() == 1) {
-      jTree.expandRow(0);
+    if (buddyTreeNode.getChildCount() == 1) {
+      jTree.expandRow(0); // If there's only one child, display it.
     }
   }
 
