@@ -29,7 +29,7 @@ public class GuiLog extends JFrame {
   private static final Object LOCK = new Object();//Used for thread syncronization
 
   static {
-    Gui.setLAF("Nimbus");
+    Gui.setLookAndFeel("Nimbus");
     //FIXME determine if this is a bug. I think it is. --> guiLog = new GuiLog();
 //		guiLog.setVisible(true);
   }

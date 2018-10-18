@@ -54,7 +54,26 @@ public class Gui {
   /* Buddy Tree Nodes */
 
   private static DefaultMutableTreeNode root;
-  private static DefaultMutableTreeNode buddyNodeholy; // Is this the whitelist?
+
+  // also, 'holy' is referenced as whitelist in gui configs (en.ini in lang dir)
+  private static DefaultMutableTreeNode buddyNodeholy;
+
+  /*
+    My only clue (so far) as to what nodeOn means:
+
+    if buddy is now online/away and was offline or handshake:
+
+  if (!BuddyList.black.containsKey(buddy.getAddress())) {
+      addToList(buddy, buddyNodeholy);
+  } else {
+      addToList(buddy, buddyNodeon);
+  }
+
+
+  Are these just online nodes?
+
+  */
+
   private static DefaultMutableTreeNode buddyNodeon;
   private static DefaultMutableTreeNode buddyNode;
   private static DefaultMutableTreeNode buddyBlacklist;
@@ -77,9 +96,8 @@ public class Gui {
 
   /**
    * Sets the look and feel of the JFrame
-   * @param string
    */
-  public static void setLAF(String string) {
+  public static void setLookAndFeel(String string) {
     try {
       LookAndFeelInfo[] lookAndFeelInfos = UIManager.getInstalledLookAndFeels();
       boolean validInfo = false;
@@ -137,10 +155,9 @@ public class Gui {
 
   /**
    * Takes a Buddy and adds it to a list indicated by {@code buddyNode} (blacklist, holylist, etc.)
-   * @param buddy
-   * @param buddyTreeNode
    */
-  private static void addToList(@NonNull Buddy buddy, @NonNull DefaultMutableTreeNode buddyTreeNode) {
+  private static void addToList(@NonNull Buddy buddy,
+      @NonNull DefaultMutableTreeNode buddyTreeNode) {
     //TODO: make method name more descriptive
     //FIXME: This methods assumes that many static references are non-null
 
@@ -171,7 +188,8 @@ public class Gui {
     if (buddy.getAddress().equals(Config.getUs())) {
       jTreeModel.insertNodeInto(node, buddyTreeNode, 0); // Make us the first child
     } else {
-      jTreeModel.insertNodeInto(node, buddyTreeNode, buddyTreeNode.getChildCount()); // Append (as last child) to node children
+      jTreeModel.insertNodeInto(node, buddyTreeNode,
+          buddyTreeNode.getChildCount()); // Append (as last child) to node children
     }
 
     if (buddyTreeNode.getChildCount() == 1) {
@@ -179,14 +197,20 @@ public class Gui {
     }
   }
 
+  /**
+   * Pardons blacklisted {@code buddy} (I think)
+   */
   public static void pardon(@NonNull Buddy buddy) {
 
     if (buddy.getStatus() >= Status.ONLINE) {
+      // IF buddy is online, away, or XA
 
-      if (Buddy.isInHolyList(buddy.getAddress())) {
+      if (!Buddy.isInHolyList(buddy.getAddress())) {
         addToList(buddy, buddyNodeholy);
       } else {
         addToList(buddy, buddyNodeon);
+        // But isn't this person online too?!?!?! I'm so confused about what online means.
+        // and if holy is a child of online, what happens when holy buddies go offline
       }
 
     } else {
@@ -204,7 +228,7 @@ public class Gui {
       return;
     }
     instance = this;
-    setLAF("Nimbus");
+    setLookAndFeel("Nimbus");
 
     if ((TCPort.profile_name == null && TCPort.profile_text == null)
         || Config.getFirststart() == 1) {
@@ -595,62 +619,29 @@ public class Gui {
       if (newStatus >= Status.ONLINE && oldStatus <= Status.HANDSHAKE) {
 
         if (!BuddyList.black.containsKey(buddy.getAddress())) {
-          MutableTreeNode node = nodeMap.remove(buddy.getAddress());
-          if (node != null) // remove entry in the gui
-          {
-            ((DefaultTreeModel) jTree.getModel()).removeNodeFromParent(node);
-          }
+          addToList(buddy, buddyNodeholy);
+        } else {
+          addToList(buddy, buddyNodeon);
+        }
 
-          node = nodeMap.get(buddy.getAddress());
-          if (node != null) {
-            node.removeFromParent();
-          }
-          nodeMap.put(buddy.getAddress(), node = new DefaultMutableTreeNode(buddy));
-
-          if (Buddy.isInHolyList(((Buddy) buddy).getAddress())) {
-            if (buddy.getAddress().equals(Config.getUs())) {
-              ((DefaultTreeModel) jTree.getModel()).insertNodeInto(node, buddyNodeholy, 0);
-            } else {
-              ((DefaultTreeModel) jTree.getModel())
-                  .insertNodeInto(node, buddyNodeholy, buddyNodeholy.getChildCount());
-            }
-
-            if (buddyNodeholy.getChildCount() == 1) {
-              jTree.expandRow(0);
-            }
-          } else {
-            if (buddy.getAddress().equals(Config.getUs())) {
-              ((DefaultTreeModel) jTree.getModel()).insertNodeInto(node, buddyNodeon, 0);
-            } else {
-              ((DefaultTreeModel) jTree.getModel())
-                  .insertNodeInto(node, buddyNodeon, buddyNodeon.getChildCount());
-            }
-
-            if (buddyNodeon.getChildCount() == 1) {
-              jTree.expandRow(0);
-            }
-          }
-
-          if (new File(Config.getMessageDir() + buddy.getAddress() + ".txt").exists()) {
-            try {
-              Scanner sc = new Scanner(new FileInputStream(
-                  Config.getMessageDir() + buddy.getAddress() + ".txt"));
-              while (sc.hasNextLine()) {
-                try {
-                  buddy.sendMessage(sc.nextLine());
-                } catch (IOException ioe) {
-                  buddy.disconnect();
-                  break;
-                }
+        if (new File(Config.getMessageDir() + buddy.getAddress() + ".txt").exists()) {
+          try {
+            Scanner sc = new Scanner(new FileInputStream(
+                Config.getMessageDir() + buddy.getAddress() + ".txt"));
+            while (sc.hasNextLine()) {
+              try {
+                buddy.sendMessage(sc.nextLine());
+              } catch (IOException ioe) {
+                buddy.disconnect();
+                break;
               }
-              sc.close();
-              new File(Config.getMessageDir() + buddy.getAddress() + ".txt").delete();
-              getChatWindow(buddy, true, true).append("Time Stamp", "Delayed messages sent.\n");
-            } catch (IOException ioe) {
-              ioe.printStackTrace();
             }
+            sc.close();
+            new File(Config.getMessageDir() + buddy.getAddress() + ".txt").delete();
+            getChatWindow(buddy, true, true).append("Time Stamp", "Delayed messages sent.\n");
+          } catch (IOException ioe) {
+            ioe.printStackTrace();
           }
-
         }
 
       } else if (oldStatus >= Status.ONLINE && newStatus <= Status.HANDSHAKE) {
