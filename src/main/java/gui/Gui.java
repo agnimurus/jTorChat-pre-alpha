@@ -150,7 +150,6 @@ public class Gui {
     if (buddy.isFullyConnected()) {
       addToList(buddy, buddyNodeholy);
     }
-
   }
 
   /**
